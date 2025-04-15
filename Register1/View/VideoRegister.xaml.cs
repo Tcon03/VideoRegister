@@ -29,8 +29,8 @@ namespace Register1.View
     {
 
 
-        private bool isPlaying = false;   
-        ChangeProperty changeProperty = new ChangeProperty(); 
+        private bool isPlaying = false;
+        ChangeProperty changeProperty = new ChangeProperty();
 
         private string[] _imageFiles;
         private int _currentImageIndex = 0;
@@ -48,7 +48,6 @@ namespace Register1.View
             timer.Interval = TimeSpan.FromSeconds(1);  // đặt khoang thời gian là 1 giây
             timer.Tick += Timer_Clip; // gọi hàm Timer_Clip 
             timer.Start(); // bắt đầu chạy hàm Timer_Clip
-
         }
 
         /// <summary>
@@ -175,7 +174,7 @@ namespace Register1.View
 
                 FrameFolderPath = System.IO.Path.Combine("FrameImage", resultFolder);
 
-                double frameInterval = (double)tolGiay.Value; 
+                double frameInterval = (double)tolGiay.Value;
 
                 if (!Directory.Exists(FrameFolderPath))
                 {
@@ -187,7 +186,7 @@ namespace Register1.View
 
                 ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
-                    FileName = "ffmpeg", 
+                    FileName = "ffmpeg",
                     Arguments = ffmpegCmd,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
@@ -202,7 +201,7 @@ namespace Register1.View
                 await process.WaitForExitAsync();
 
                 MessageBox.Show("Cắt ảnh thành công rồi nhé ! ", "Thông báo ", MessageBoxButton.OK, MessageBoxImage.Information);
-                if (changeProperty?.ImageList != null) 
+                if (changeProperty?.ImageList != null)
                 {
                     changeProperty.ImageList.Clear();
                 }
@@ -214,7 +213,7 @@ namespace Register1.View
             }
 
         }
-             
+
         /// <summary>
         /// Hàm tải ảnh từ thư mục và hiển thị ảnh 
         /// </summary>
@@ -246,7 +245,7 @@ namespace Register1.View
                 }
                 if (_imageFiles.Length > 0)
                 {
-                    DisplayImageFromPath(_imageFiles[_currentImageIndex]); 
+                    DisplayImageFromPath(_imageFiles[_currentImageIndex]);
                 }
                 else
                 {
@@ -318,7 +317,7 @@ namespace Register1.View
 
         private void Click_Back(object sender, MouseButtonEventArgs e)
         {
-            if(_imageFiles != null) // kiểm tra xem mảng _imageFiles có khác null không
+            if (_imageFiles != null) // kiểm tra xem mảng _imageFiles có khác null không
             {
                 if (_currentImageIndex > 0) // nếu ảnh hiện tại > 0 
                 {
@@ -326,21 +325,21 @@ namespace Register1.View
                     DisplayImageFromPath(_imageFiles[_currentImageIndex]); // hiển thị ảnh hiện tại
                 }
             }
-           
+
         }
 
         private void Click_Next(object sender, MouseButtonEventArgs e)
         {
-            if (_imageFiles != null) 
+            if (_imageFiles != null)
             {
-                if (_currentImageIndex < _imageFiles.Length - 1)  
+                if (_currentImageIndex < _imageFiles.Length - 1)
                 {
-                    _currentImageIndex++; 
+                    _currentImageIndex++;
                     DisplayImageFromPath(_imageFiles[_currentImageIndex]);
                 }
             }
-            
 
         }
+
     }
 }
