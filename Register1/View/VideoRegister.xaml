@@ -1,0 +1,350 @@
+﻿<Window x:Class="Register1.View.VideoRegister"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Register1.View"
+         xmlns:Icon ="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:fa="http://schemas.fontawesome.io/icons/"
+        mc:Ignorable="d"
+        Title="VideoRegister" Height="720" Width="1280">
+    <Grid>
+        <!--chia lại thành 3 cột-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--xử lý cột 2-->
+        <GridSplitter Grid.Column="1"
+           HorizontalAlignment="Stretch"
+           Margin="1 20 0 10"
+           Background="LightPink">
+        </GridSplitter>
+
+
+        <!--xử lý cột 1-->
+        <Grid Grid.Column="0">
+            <!--chia cột 1 ra làm  2 hàng-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!--xử lý hàng 1-->
+            <Grid >
+                <Button Name="upLoad"
+                     Margin="10"
+                     Style="{StaticResource btnUpLoad  }"    
+                     Click="Click_UploadVideo">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial 
+                          Kind="Upload" 
+                           Height="15" 
+                           VerticalAlignment="Center" 
+                             Width="20"
+                                  />
+                        <TextBlock
+                            Text="UpLoad Video" 
+                             Margin="10,0,0,0"
+                            VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <!--kết thúc hàng 1-->
+            </Grid>
+
+            <Border Grid.Row="1"
+                 CornerRadius="20"
+                 Margin="10"
+                 Background="LightGray">
+
+                <Grid >
+                    <MediaElement 
+                       Name="videoPlayer"
+                       Width="500"
+                       LoadedBehavior="Manual"/>
+
+                    <StackPanel 
+                        VerticalAlignment="Bottom" 
+                         HorizontalAlignment="Center"
+                         Orientation="Horizontal">
+
+                        <Icon:PackIconMaterial 
+                             Kind="Pause" 
+                             Style="{StaticResource icon}"
+                             Name="playPauseIcon"
+                             MouseDown="PauseVideo"
+                         />
+
+                        <Icon:PackIconMaterial 
+                             Kind="VolumeHigh" 
+                             Style="{StaticResource icon}"
+                             MouseDown="MuteVideo"
+                              Name="muteVideoOf"
+                         />
+                        <TextBlock x:Name="timeDisplay" 
+                            VerticalAlignment="Center"
+                               FontWeight="DemiBold"
+                                Foreground="Black"
+                              Margin="10,0"
+                                  />
+
+                        <Icon:PackIconMaterial 
+                             Kind="Rewind10" 
+                             Style="{StaticResource icon}"
+                             MouseDown="RewindVideo"
+                             Name="backVideo"
+                         />
+
+
+
+                        <Slider Name="volumeSlider"
+                             Margin = "10 20 0 0"
+                             TickPlacement="BottomRight"
+                             Maximum="10"
+                             Value="{
+                             Binding ElementName=videoPlayer ,
+                             Path=Volume , 
+                             UpdateSourceTrigger=PropertyChanged}"
+                             TickFrequency="1"
+                             Width="100"
+                             />
+
+                        <TextBox Text="{Binding ElementName=volumeSlider ,
+                             Path=Value,
+                             UpdateSourceTrigger=PropertyChanged}" 
+                                  VerticalAlignment="Center"
+                              FontSize="20"
+                              Margin="5"
+                              MinWidth="40"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+            <!--Kết thúc cột 1-->
+        </Grid>
+
+
+
+        <!--xử lý cột 3-->
+        <Grid Grid.Column="2">
+            <!--chia cột 3 ra làm 3 hàng-->
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+
+            <!--Hàng 0 -->
+            <WrapPanel Margin="15" Grid.Row="0">
+                <!--button item 1-->
+                <Button Name="genImage"
+                     Click="generate_ImageClick"
+                     Style="{StaticResource btnClick}" >
+
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial 
+                             Kind="ImageArea" 
+                             Height="15" 
+                             VerticalAlignment="Center"
+                             Width="20" />
+
+                        <TextBlock
+                         Name="disPlay"
+                         Text="Generate Image" 
+                         Margin="10,0,0,0"
+                         VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                </Button>
+
+                <!--item 2-->
+                <Label Content="Tần số lấy ảnh "
+                    VerticalAlignment="Center"
+                    Margin="10 0 0 0"
+                    FontSize="13"/>
+
+                <!--item 3 điều chỉnh tốc độ-->
+                <toolkit:DoubleUpDown Increment="1"  
+                                   x:Name="tolGiay"
+                                   Width="50"
+                                   Height="40"
+                                   Minimum="1"
+                                      Value="1"
+                                   Maximum="10"
+                                   FontSize="15"/>
+
+                <Label Content=" giây/1 ảnh  "
+                    VerticalAlignment="Center"
+                    Margin="0 0 0 0"
+                    FontSize="13"/>
+
+
+            </WrapPanel>
+
+            <!--dùng user control Để xử lý hàng 2-->
+            <!--<Grid Grid.Row="1" Margin="5">
+                <User:SelectImage x:Name="selectImageControl" Grid.Column="1" />
+            </Grid>-->
+            <!--Kết thúc cột 3-->
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="auto"/>
+
+                </Grid.RowDefinitions>
+
+                <Border Background="LightGray"
+                        CornerRadius="20"
+                        Margin="10 0"
+                        >
+                    <Grid>
+                        <Image 
+                              Name="disPlayImage" 
+                              Source="{Binding ImageList , UpdateSourceTrigger=PropertyChanged , Mode=TwoWay}"
+                               Stretch="Uniform" HorizontalAlignment="Center"/>
+
+                        <Icon:PackIconMaterial 
+                            VerticalAlignment="Center" 
+                            MouseDown="Click_Back"
+                            
+                            Kind="ArrowLeft" 
+                            Style="{StaticResource icon}"
+                            />
+
+                        <Icon:PackIconMaterial 
+                            VerticalAlignment="Center" 
+                          HorizontalAlignment="Right"
+                            Kind="ArrowRight" 
+                            MouseDown="Click_Next"
+                            
+                            Style="{StaticResource icon}"
+                            />
+                    </Grid>
+                </Border>
+
+
+
+                <!--<ListView Background="Transparent" Grid.Row="1" Margin="10">
+                        <ItemsControl ItemsSource="{Binding ImageList}"  >
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="2">
+                                        <Border Margin="5"
+                                             Height="80"
+                                             Width="100"
+                                             BorderBrush="Black"
+                                             BorderThickness="1">
+                                            <Image Source="{Binding Image}" Stretch="Uniform" />
+                                        </Border>
+
+                                        <Icon:PackIconMaterial Kind="Close" 
+                                                 Margin="10"
+                                                Foreground="Red"
+                                                               Width="10"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Right"
+                                                />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ListView>-->
+
+                <Border BorderBrush="Gray"
+                                    CornerRadius="10"
+                                    Margin="5"
+                                    Grid.Row="1"
+                                     BorderThickness="1">
+                    <ListBox ItemsSource="{Binding ImageList}"
+                             BorderBrush="Transparent"
+                             Background="Transparent"
+                             Name="lbxImageSource"
+                             >
+
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="100" Height="100">
+                                    <StackPanel Orientation="Horizontal" >
+                                        <Image Source="{Binding Image , UpdateSourceTrigger=PropertyChanged ,Mode=TwoWay}" Stretch="Uniform" />
+                                    </StackPanel>
+                                    <Icon:PackIconMaterial Kind="Close" 
+                                                 Foreground="Red"
+                                                 Width="10"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Right"
+                                                MouseDown="Delete_Click"
+                                                                       />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+
+
+
+                <DockPanel Grid.Row="2"  >
+                    <Button Name="btnSelect"
+                             HorizontalAlignment="Left"
+                            Margin="10"
+                            Foreground="White"
+                            Style="{StaticResource btnUpLoad}">
+                        <StackPanel Orientation="Horizontal" >
+                            <Icon:PackIconMaterial Kind="Check" 
+                                                   Height="15"
+                                                   Width="15"
+                                                   VerticalAlignment="Center"
+                                                   />
+                            <TextBlock   Text="Accept"
+                                     Margin=" 5 0"
+                                       VerticalAlignment="Center"/>
+
+                        </StackPanel>
+                    </Button>
+
+                    <Button Name="btnNoReject"
+                                HorizontalAlignment="Right" 
+                                Margin="10"
+                            Style="{StaticResource btnReject}">
+                        <StackPanel 
+                            Orientation="Horizontal">
+
+                            <Icon:PackIconMaterial Kind="Close" 
+                                                   Height="15"
+                                                   Width="15"
+                                                   Margin="5"
+                                                   VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Reject"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
+
+
+            </Grid>
+        </Grid>
+
+
+        <!--kết thúc grid chính-->
+    </Grid>
+</Window>
