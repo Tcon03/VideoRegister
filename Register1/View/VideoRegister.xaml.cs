@@ -44,16 +44,18 @@ namespace Register1.View
         {
             DataContext = changeProperty; // gán DataContext cho đối tượng changeProperty 
             InitializeComponent();
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);  // đặt khoang thời gian là 1 giây
             timer.Tick += Timer_Clip; // gọi hàm Timer_Clip 
             timer.Start(); // bắt đầu chạy hàm Timer_Clip
+            
         }
 
         /// <summary>
         ///  Hàm để cập nhật thời gian video đang chạy
         /// </summary>
-        private void Timer_Clip(object? sender, EventArgs e)
+        private async void Timer_Clip(object? sender, EventArgs e)
         {
             if (videoPlayer != null)
             {
@@ -67,32 +69,21 @@ namespace Register1.View
         /// <summary>
         /// Upload video từ máy tính lên
         /// </summary>
-        private void Click_UploadVideo(object sender, RoutedEventArgs e)
+        private async void Click_UploadVideo(object sender, RoutedEventArgs e)
         {
+            await upLoadVideoAsync(); 
+        }
 
-
-            OpenFileDialog opFile = new OpenFileDialog();
-            opFile.Filter = "Video files (*.mp4)|*.mp4|All files (*.*)|*.*";
-            opFile.Title = "Select a video file";
-
-            if (opFile.ShowDialog() == true)
+        public async Task upLoadVideoAsync()
+        {
+            OpenFileDialog op = new OpenFileDialog();
+            op.Filter = "Video files (*.mp4)|*.mp4|All files (*.*)|*.*";
+            if(op.ShowDialog() == true)
             {
-                changeProperty.videoPath = opFile.FileName; // Get the selected file path
-                videoPlayer.Source = new Uri(changeProperty.videoPath); // Set the video source
-                videoPlayer.Play(); // Play the video
+                changeProperty.videoPath = op.FileName;
+                    videoPlayer.Source = new Uri(changeProperty.videoPath);
+                    videoPlayer.Play();
             }
-
-
-            //OpenFileDialog openFileDialog = new OpenFileDialog();
-            //openFileDialog.Filter = "Image Files |*.png;*.jpg ;*.jpeg ";
-            //openFileDialog.Title = "select Image File"; 
-            //if(openFileDialog.ShowDialog() == true)
-            //{
-            //    string filePathImage = openFileDialog.FileName; // Get the selected file path 
-            //    // chuyển đổi ảnh từ đường dẫn thành bitmap 
-            //    BitmapImage bitmap = new BitmapImage(new Uri(filePathImage)); // tạo đối tượng bitmap từ đường dẫn file
-            //    disPlayImage.Source = bitmap; // gán ảnh vào đối tượng disPlayImage
-            //}
         }
 
         /// <summary>
@@ -147,7 +138,7 @@ namespace Register1.View
                 var currentPosition = videoPlayer.Position.TotalSeconds;
                 if (currentPosition > 5)
                 {
-                    videoPlayer.Position = videoPlayer.Position - TimeSpan.FromSeconds(10); // Rewind the video by 5 seconds
+                    videoPlayer.Position = videoPlayer.Position - TimeSpan.FromSeconds(10); // Rewind the video by 10 seconds
                 }
                 else
                 {
@@ -210,6 +201,10 @@ namespace Register1.View
                     changeProperty.ImageList = new ObservableCollection<ImageData>();
                 }
                 LoadImageFolder(FrameFolderPath);
+            }
+            else
+            {
+                MessageBox.Show("Please Upload Video Before Generate !" ,"Infomation" , MessageBoxButton.OK ,MessageBoxImage.Information); 
             }
 
         }
@@ -340,6 +335,7 @@ namespace Register1.View
             }
 
         }
+        
 
     }
 }

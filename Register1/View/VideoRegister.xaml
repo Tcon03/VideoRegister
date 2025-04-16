@@ -8,6 +8,7 @@
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
+        Icon="/Images/FaceIcon.png"
         Title="VideoRegister" Height="720" Width="1280">
     <Grid>
         <!--chia lại thành 3 cột-->
@@ -63,7 +64,7 @@
                 <Grid >
                     <MediaElement 
                        Name="videoPlayer"
-                       Width="500"
+                       Width="auto"
                        LoadedBehavior="Manual"/>
 
                     <StackPanel 
@@ -85,11 +86,11 @@
                               Name="muteVideoOf"
                          />
                         <TextBlock x:Name="timeDisplay" 
-                            VerticalAlignment="Center"
-                               FontWeight="DemiBold"
+                               FontWeight="Bold"
                                 Foreground="Black"
-                              Margin="10,0"
-                                  />
+                                   Height="30"
+                                  Margin="10 20 10 0"
+                                   />
 
                         <Icon:PackIconMaterial 
                              Kind="Rewind10" 
