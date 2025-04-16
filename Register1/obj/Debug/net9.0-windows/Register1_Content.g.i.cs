@@ -9,5 +9,6 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/image01.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/faceicon.png")]
 
 
