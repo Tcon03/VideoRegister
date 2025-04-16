@@ -49,13 +49,13 @@ namespace Register1.View
             timer.Interval = TimeSpan.FromSeconds(1);  // đặt khoang thời gian là 1 giây
             timer.Tick += Timer_Clip; // gọi hàm Timer_Clip 
             timer.Start(); // bắt đầu chạy hàm Timer_Clip
-            
+
         }
 
         /// <summary>
         ///  Hàm để cập nhật thời gian video đang chạy
         /// </summary>
-        private async void Timer_Clip(object? sender, EventArgs e)
+        private void Timer_Clip(object? sender, EventArgs e)
         {
             if (videoPlayer != null)
             {
@@ -71,18 +71,18 @@ namespace Register1.View
         /// </summary>
         private async void Click_UploadVideo(object sender, RoutedEventArgs e)
         {
-            await upLoadVideoAsync(); 
+            await upLoadVideoAsync();
         }
 
         public async Task upLoadVideoAsync()
         {
             OpenFileDialog op = new OpenFileDialog();
             op.Filter = "Video files (*.mp4)|*.mp4|All files (*.*)|*.*";
-            if(op.ShowDialog() == true)
+            if (op.ShowDialog() == true)
             {
                 changeProperty.videoPath = op.FileName;
-                    videoPlayer.Source = new Uri(changeProperty.videoPath);
-                    videoPlayer.Play();
+                videoPlayer.Source = new Uri(changeProperty.videoPath);
+                videoPlayer.Play();
             }
         }
 
@@ -157,6 +157,9 @@ namespace Register1.View
             if (videoPlayer.Source != null)
             {
 
+
+                progressBarLoad.Visibility = Visibility.Visible;
+
                 string timeInputVideo = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
                 string folderFrame = System.IO.Path.GetFileNameWithoutExtension(videoPlayer.Source.LocalPath);
@@ -191,7 +194,8 @@ namespace Register1.View
                 process.Start();
                 await process.WaitForExitAsync();
 
-                MessageBox.Show("Cắt ảnh thành công rồi nhé ! ", "Thông báo ", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
                 if (changeProperty?.ImageList != null)
                 {
                     changeProperty.ImageList.Clear();
@@ -200,11 +204,15 @@ namespace Register1.View
                 {
                     changeProperty.ImageList = new ObservableCollection<ImageData>();
                 }
-                LoadImageFolder(FrameFolderPath);
+                await Task.Delay(5000);
+                progressBarLoad.Visibility = Visibility.Collapsed;
+
+                await LoadImageFolder(FrameFolderPath);
+                disPlayImage.Visibility = Visibility.Visible;
             }
             else
             {
-                MessageBox.Show("Please Upload Video Before Generate !" ,"Infomation" , MessageBoxButton.OK ,MessageBoxImage.Information); 
+                MessageBox.Show("Please Upload Video Before Generate !", "Infomation", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -212,9 +220,8 @@ namespace Register1.View
         /// <summary>
         /// Hàm tải ảnh từ thư mục và hiển thị ảnh 
         /// </summary>
-        private void LoadImageFolder(string folderImage)
+        private async Task LoadImageFolder(string folderImage)
         {
-
             try
             {
                 _imageFiles = Directory.GetFiles(folderImage, "*.png");
@@ -227,7 +234,6 @@ namespace Register1.View
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapImage.EndInit();
                     bitmapImage.Freeze();
-
                     ImageData image = new ImageData
                     {
                         Image = bitmapImage,
@@ -240,7 +246,8 @@ namespace Register1.View
                 }
                 if (_imageFiles.Length > 0)
                 {
-                    DisplayImageFromPath(_imageFiles[_currentImageIndex]);
+
+                    await DisplayImageFromPath(_imageFiles[_currentImageIndex]);
                 }
                 else
                 {
@@ -256,36 +263,30 @@ namespace Register1.View
         /// <summary>
         /// Hàm hiển thị ảnh giao thức với lớp BitmapImage
         /// </summary>
-        private void DisplayImageFromPath(string pathName)
+        private async Task DisplayImageFromPath(string pathName)
         {
-            try
-            {
-                /* BitmapImage là một lớp trong WPF dùng để hiển thị ảnh  - tạo ra 1 đối tượng ảnh trống 
-                 * 
-                 * B1 : Khời tạo đối tượng BitmapImage dùng để hiển thị ảnh 
-                 * - dùng BeginInit() để khởi tạo đối tượng BitmapImage 
-                 * - dùng UriSource để lấy đường dẫn đến ảnh mà bạn muốn truyền vào - pathName dường dẫn đến ảnh -  UriKind.RelativeOrAbsolute là kiểu đường dẫn tương đối và tuyệt đối
-                 *  - CacheOption là tùy chọn bộ nhớ cache - OnLoad là tải ảnh vào bộ nhớ cache ngay lập tức - ảnh sẽ đc tải vào bộ nhớ BitmapImage khi được khởi tạo và giải phóng tài nguyên
-                 *  - EndInit() để kết thúc khởi tạo đối tượng BitmapImage
-                 *  - Freeze() để giải phóng tài nguyên 
-                 * B2 : Khởi tạo đối tượng ImageData để lưu trữ ảnh 
-                 *  - gán ảnh vào thuộc tính Image của đối tượng ImageData 
-                 * B3 : gán ảnh vào đối tượng disPlayImage 
-                 * B4 : thêm ảnh vào ImageList
-                 *  
-                 */
-                BitmapImage imageData = new BitmapImage();
-                imageData.BeginInit();
-                imageData.UriSource = new Uri(pathName, UriKind.RelativeOrAbsolute);
-                imageData.CacheOption = BitmapCacheOption.OnLoad;
-                imageData.EndInit();
-                imageData.Freeze();
-                disPlayImage.Source = imageData;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Lỗi khi hiển thị ảnh: " + ex.Message);
-            }
+
+            /* BitmapImage là một lớp trong WPF dùng để hiển thị ảnh  - tạo ra 1 đối tượng ảnh trống 
+             * 
+             * B1 : Khời tạo đối tượng BitmapImage dùng để hiển thị ảnh 
+             * - dùng BeginInit() để khởi tạo đối tượng BitmapImage 
+             * - dùng UriSource để lấy đường dẫn đến ảnh mà bạn muốn truyền vào - pathName dường dẫn đến ảnh -  UriKind.RelativeOrAbsolute là kiểu đường dẫn tương đối và tuyệt đối
+             *  - CacheOption là tùy chọn bộ nhớ cache - OnLoad là tải ảnh vào bộ nhớ cache ngay lập tức - ảnh sẽ đc tải vào bộ nhớ BitmapImage khi được khởi tạo và giải phóng tài nguyên
+             *  - EndInit() để kết thúc khởi tạo đối tượng BitmapImage
+             *  - Freeze() để giải phóng tài nguyên 
+             * B2 : Khởi tạo đối tượng ImageData để lưu trữ ảnh 
+             *  - gán ảnh vào thuộc tính Image của đối tượng ImageData 
+             * B3 : gán ảnh vào đối tượng disPlayImage 
+             * B4 : thêm ảnh vào ImageList
+             *  
+             */
+            BitmapImage imageData = new BitmapImage();
+            imageData.BeginInit();
+            imageData.UriSource = new Uri(pathName, UriKind.RelativeOrAbsolute);
+            imageData.CacheOption = BitmapCacheOption.OnLoad;
+            imageData.EndInit();
+            imageData.Freeze();
+            disPlayImage.Source = imageData;
         }
 
         private void Delete_Click(object sender, MouseButtonEventArgs e)
@@ -310,32 +311,54 @@ namespace Register1.View
             }
         }
 
-        private void Click_Back(object sender, MouseButtonEventArgs e)
+        private async void Click_Back(object sender, MouseButtonEventArgs e)
         {
             if (_imageFiles != null) // kiểm tra xem mảng _imageFiles có khác null không
             {
                 if (_currentImageIndex > 0) // nếu ảnh hiện tại > 0 
                 {
                     _currentImageIndex--; // giảm chỉ số ảnh hiện tại xuống 1
-                    DisplayImageFromPath(_imageFiles[_currentImageIndex]); // hiển thị ảnh hiện tại
+                    await DisplayImageFromPath(_imageFiles[_currentImageIndex]); // hiển thị ảnh hiện tại
                 }
             }
 
         }
 
-        private void Click_Next(object sender, MouseButtonEventArgs e)
+        private async void Click_Next(object sender, MouseButtonEventArgs e)
         {
             if (_imageFiles != null)
             {
                 if (_currentImageIndex < _imageFiles.Length - 1)
                 {
                     _currentImageIndex++;
-                    DisplayImageFromPath(_imageFiles[_currentImageIndex]);
+                    await DisplayImageFromPath(_imageFiles[_currentImageIndex]);
                 }
             }
 
         }
-        
 
+        private void click_RemoveAll(object sender, MouseButtonEventArgs e)
+        {
+
+            var selectDel = lbxImageSource.SelectedItem as Image ; 
+
+          
+            lbxImageSource.Items.Remove(selectDel);
+
+
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            videoPlayer.Width = this.Width;
+            videoPlayer.Height = this.Height;
+        }
+
+        private void lbxImageSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+      
+         var select = lbxImageSource.SelectedItem as ImageData;
+            disPlayImage.Source = select.Image;  
+        }
     }
 }
