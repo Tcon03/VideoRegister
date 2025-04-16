@@ -9,8 +9,9 @@
     xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         Icon="/Images/FaceIcon.png"
+        SizeChanged="Window_SizeChanged"
         Title="VideoRegister" Height="720" Width="1280">
-    <Grid>
+    <Grid >
         <!--chia lại thành 3 cột-->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1.5*" />
@@ -79,12 +80,7 @@
                              MouseDown="PauseVideo"
                          />
 
-                        <Icon:PackIconMaterial 
-                             Kind="VolumeHigh" 
-                             Style="{StaticResource icon}"
-                             MouseDown="MuteVideo"
-                              Name="muteVideoOf"
-                         />
+                        
                         <TextBlock x:Name="timeDisplay" 
                                FontWeight="Bold"
                                 Foreground="Black"
@@ -99,7 +95,12 @@
                              Name="backVideo"
                          />
 
-
+                        <Icon:PackIconMaterial 
+                             Kind="VolumeHigh" 
+                             Style="{StaticResource icon}"
+                             MouseDown="MuteVideo"
+                              Name="muteVideoOf"
+                         />
 
                         <Slider Name="volumeSlider"
                              Margin = "10 20 0 0"
@@ -206,16 +207,29 @@
                         CornerRadius="20"
                         Margin="10 0"
                         >
+
                     <Grid>
                         <Image 
                               Name="disPlayImage" 
                               Source="{Binding ImageList , UpdateSourceTrigger=PropertyChanged , Mode=TwoWay}"
-                               Stretch="Uniform" HorizontalAlignment="Center"/>
+                              Visibility="Collapsed"   
+                              Stretch="Uniform" 
+                              HorizontalAlignment="Center"/>
+                        
+                        <ProgressBar x:Name="progressBarLoad" 
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Visibility="Collapsed"
+                                     IsIndeterminate="True"
+                                     Width="200"
+                                     Height="30"
+                                     Value="80"
+                                     
+                                     />
 
                         <Icon:PackIconMaterial 
                             VerticalAlignment="Center" 
                             MouseDown="Click_Back"
-                            
                             Kind="ArrowLeft" 
                             Style="{StaticResource icon}"
                             />
@@ -274,6 +288,7 @@
                              BorderBrush="Transparent"
                              Background="Transparent"
                              Name="lbxImageSource"
+                             SelectionChanged="lbxImageSource_SelectionChanged"
                              >
 
                         <ListBox.ItemsPanel>
@@ -336,6 +351,7 @@
                                                    VerticalAlignment="Center"/>
 
                             <TextBlock Text="Reject"
+                                      MouseDown="click_RemoveAll"
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>

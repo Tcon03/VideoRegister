@@ -11,12 +11,17 @@ using System.Windows.Xps.Serialization;
 
 namespace Register1.ViewModel
 {
-   public class ChangeProperty :INotifyPropertyChanged
+    public class ChangeProperty : INotifyPropertyChanged
     {
 
-        private ObservableCollection<ImageData> _imageList = new ObservableCollection<ImageData>();  
+        private ObservableCollection<ImageData> _imageList = new ObservableCollection<ImageData>();
 
-        public ObservableCollection<ImageData> ImageList 
+        public ChangeProperty()
+        {
+            _imageList = new ObservableCollection<ImageData>();
+        }
+
+        public ObservableCollection<ImageData> ImageList
         {
 
             get { return _imageList; }
@@ -49,9 +54,9 @@ namespace Register1.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-            protected void OnPropertyChanged(string propertyName)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
