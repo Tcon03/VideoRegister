@@ -10,8 +10,8 @@ namespace Register1.Model
 {
     public class ImageData
     {
-      public BitmapImage Image { get; set; } // thuộc tính ảnh 
-        public string videoPath { get; set; } // thuộc tính đường dẫn video
+        public BitmapImage imageBitMap { get; set; } // thuộc tính ảnh 
+        public string imagePath { get; set; } // thuộc tính đường dẫn video
     }
     
 }

@@ -134,3 +134,4 @@ E:\Do excercise\_Project Program\7.Register1\Register1\obj\Debug\net9.0-windows\
 E:\Do excercise\_Project Program\7.Register1\Register1\obj\Debug\net9.0-windows\Register1.genruntimeconfig.cache
 E:\Do excercise\_Project Program\7.Register1\Register1\obj\Debug\net9.0-windows\ref\Register1.dll
 E:\Do excercise\_Project Program\7.Register1\Register1\bin\Debug\net9.0-windows\Images\FaceIcon.png
+E:\Do excercise\_Project Program\7.Register1\Register1\bin\Debug\net9.0-windows\Images\anhNen.jpg

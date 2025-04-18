@@ -80,7 +80,7 @@
                              MouseDown="PauseVideo"
                          />
 
-                        
+
                         <TextBlock x:Name="timeDisplay" 
                                FontWeight="Bold"
                                 Foreground="Black"
@@ -211,11 +211,12 @@
                     <Grid>
                         <Image 
                               Name="disPlayImage" 
-                              Source="{Binding ImageList , UpdateSourceTrigger=PropertyChanged , Mode=TwoWay}"
-                              Visibility="Collapsed"   
-                              Stretch="Uniform" 
+                               Source="{Binding imageSelected, 
+                                        UpdateSourceTrigger=PropertyChanged, 
+                                        Mode=TwoWay}" 
+                                       Stretch="Uniform" 
                               HorizontalAlignment="Center"/>
-                        
+
                         <ProgressBar x:Name="progressBarLoad" 
                                      HorizontalAlignment="Center"
                                      VerticalAlignment="Center"
@@ -224,9 +225,7 @@
                                      Width="200"
                                      Height="30"
                                      Value="80"
-                                     
                                      />
-
                         <Icon:PackIconMaterial 
                             VerticalAlignment="Center" 
                             MouseDown="Click_Back"
@@ -239,7 +238,6 @@
                           HorizontalAlignment="Right"
                             Kind="ArrowRight" 
                             MouseDown="Click_Next"
-                            
                             Style="{StaticResource icon}"
                             />
                     </Grid>
@@ -284,12 +282,15 @@
                                     Margin="5"
                                     Grid.Row="1"
                                      BorderThickness="1">
-                    <ListBox ItemsSource="{Binding ImageList}"
+                    <ListBox ItemsSource="{Binding imageLists}"
+                             
+                      SelectionChanged="select_Image"
                              BorderBrush="Transparent"
+                             
                              Background="Transparent"
                              Name="lbxImageSource"
-                             SelectionChanged="lbxImageSource_SelectionChanged"
-                             >
+                            >
+
 
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -301,7 +302,11 @@
                             <DataTemplate>
                                 <Grid Width="100" Height="100">
                                     <StackPanel Orientation="Horizontal" >
-                                        <Image Source="{Binding Image , UpdateSourceTrigger=PropertyChanged ,Mode=TwoWay}" Stretch="Uniform" />
+                                        <Image Source="{Binding imageBitMap, 
+                                            UpdateSourceTrigger=PropertyChanged 
+                                            ,Mode=TwoWay}" 
+                                               
+                                             Stretch="Uniform" />
                                     </StackPanel>
                                     <Icon:PackIconMaterial Kind="Close" 
                                                  Foreground="Red"
@@ -323,6 +328,7 @@
                              HorizontalAlignment="Left"
                             Margin="10"
                             Foreground="White"
+                            Click="btnSelect_Click"
                             Style="{StaticResource btnUpLoad}">
                         <StackPanel Orientation="Horizontal" >
                             <Icon:PackIconMaterial Kind="Check" 
@@ -340,6 +346,7 @@
                     <Button Name="btnNoReject"
                                 HorizontalAlignment="Right" 
                                 Margin="10"
+                            Click="btn_DeleteImage"
                             Style="{StaticResource btnReject}">
                         <StackPanel 
                             Orientation="Horizontal">
@@ -351,7 +358,6 @@
                                                    VerticalAlignment="Center"/>
 
                             <TextBlock Text="Reject"
-                                      MouseDown="click_RemoveAll"
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
