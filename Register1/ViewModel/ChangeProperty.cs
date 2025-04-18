@@ -13,45 +13,40 @@ namespace Register1.ViewModel
 {
     public class ChangeProperty : INotifyPropertyChanged
     {
-
+       
         private ObservableCollection<ImageData> _imageList = new ObservableCollection<ImageData>();
-
-        public ChangeProperty()
-        {
-            _imageList = new ObservableCollection<ImageData>();
-        }
-
-        public ObservableCollection<ImageData> ImageList
+        public ObservableCollection<ImageData> imageLists
         {
 
             get { return _imageList; }
             set
             {
                 _imageList = value;
-                OnPropertyChanged(nameof(ImageList));
+                OnPropertyChanged(nameof(imageLists));
             }
         }
 
-        private string _videoPath;
-        public string videoPath
+        private string _imagepath;
+        public string imagePath
         {
-            get { return _videoPath; }
+            get { return _imagepath; }
             set
             {
-                _videoPath = value;
-                OnPropertyChanged("videoPath");
+                _imagepath = value;
+                OnPropertyChanged("imagePath");
             }
         }
-        private BitmapImage _image;
-        public BitmapImage Images
+        private BitmapImage _imageSelected; // thuộc tính này dùng để lưu trữ hình ảnh  khi UI thay đổi thì nó cũng sẽ thay đổi 
+        public BitmapImage imageSelected
         {
-            get { return _image; }
+            get { return _imageSelected; }
             set
             {
-                _image = value;
-                OnPropertyChanged("Images");
+                _imageSelected = value;
+                OnPropertyChanged("imageSelected");
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
