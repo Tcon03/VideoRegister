@@ -39,7 +39,7 @@
             <Grid >
                 <Button Name="upLoad"
                      Margin="10"
-                     Style="{StaticResource btnUpLoad  }"    
+                     Style="{StaticResource btnUpLoad }"    
                      Click="Click_UploadVideo">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
@@ -211,7 +211,7 @@
                     <Grid>
                         <Image 
                               Name="disPlayImage" 
-                               Source="{Binding imageSelected, 
+                               Source="{Binding imageBitMap, 
                                         UpdateSourceTrigger=PropertyChanged, 
                                         Mode=TwoWay}" 
                                        Stretch="Uniform" 
@@ -282,7 +282,7 @@
                                     Margin="5"
                                     Grid.Row="1"
                                      BorderThickness="1">
-                    <ListBox ItemsSource="{Binding imageLists}"
+                    <ListBox ItemsSource="{Binding imageList}"
                              
                       SelectionChanged="select_Image"
                              BorderBrush="Transparent"
@@ -302,6 +302,7 @@
                             <DataTemplate>
                                 <Grid Width="100" Height="100">
                                     <StackPanel Orientation="Horizontal" >
+           
                                         <Image Source="{Binding imageBitMap, 
                                             UpdateSourceTrigger=PropertyChanged 
                                             ,Mode=TwoWay}" 

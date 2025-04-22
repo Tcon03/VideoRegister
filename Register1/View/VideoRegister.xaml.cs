@@ -18,7 +18,6 @@ using System.IO;
 using System.Diagnostics;
 using Register1.Model;
 using System.Collections.ObjectModel;
-using Register1.ViewModel;
 using Xceed.Wpf.AvalonDock.Layout;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -29,11 +28,10 @@ namespace Register1.View
     public partial class VideoRegister : Window
     {
         private bool isPlaying = false;
-        ChangeProperty changeProperty = new ChangeProperty();
-
+        ImageData saveImage = new ImageData(); 
         private string[] _imageFiles;
         private int _currentImageIndex = 0;
-        private string FrameFolderPath;
+        private string FrameFolderPath; 
 
 
         /// <summary>
@@ -42,7 +40,7 @@ namespace Register1.View
         public VideoRegister()
         {
 
-            DataContext = changeProperty; // gán DataContext cho đối tượng changeProperty 
+            DataContext = saveImage; // gán DataContext cho đối tượng changeProperty 
             InitializeComponent();
 
             DispatcherTimer timer = new DispatcherTimer();
@@ -69,22 +67,18 @@ namespace Register1.View
         /// <summary>
         /// Upload video từ máy tính lên
         /// </summary>
-        private async void Click_UploadVideo(object sender, RoutedEventArgs e)
-        {
-            await upLoadVideoAsync();
-        }
-
-        public async Task upLoadVideoAsync()
+        private void Click_UploadVideo(object sender, RoutedEventArgs e)
         {
             OpenFileDialog op = new OpenFileDialog();
             op.Filter = "Video files (*.mp4)|*.mp4|All files (*.*)|*.*";
             if (op.ShowDialog() == true)
             {
-                changeProperty.imagePath = op.FileName;
-                videoPlayer.Source = new Uri(changeProperty.imagePath);
+                var selecteFileName = op.FileName;
+                videoPlayer.Source = new Uri(selecteFileName);
                 videoPlayer.Play();
             }
         }
+
 
         /// <summary>
         /// Dừng video hoặc Play 
@@ -156,13 +150,10 @@ namespace Register1.View
             if (videoPlayer.Source != null)
             {
 
-
                 progressBarLoad.Visibility = Visibility.Visible;
 
                 string timeInputVideo = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-
                 string folderFrame = System.IO.Path.GetFileNameWithoutExtension(videoPlayer.Source.LocalPath);
-
                 string resultFolder = $"{folderFrame}_{timeInputVideo}";
 
                 FrameFolderPath = System.IO.Path.Combine("FrameImage", resultFolder);
@@ -174,7 +165,7 @@ namespace Register1.View
                     Directory.CreateDirectory(FrameFolderPath); // tạo thư mục chứa ảnh
                 }
 
-                string ffmpegCmd = $"-i \"{changeProperty.imagePath}\" -vf fps={1.0 / frameInterval} \"{FrameFolderPath}/frame_%01d.png\"";
+                string ffmpegCmd = $"-i \"{videoPlayer.Source.LocalPath}\" -vf fps={1.0 / frameInterval} \"{FrameFolderPath}/frame_%01d.png\"";
 
 
                 ProcessStartInfo processStartInfo = new ProcessStartInfo
@@ -195,13 +186,13 @@ namespace Register1.View
 
 
 
-                if (changeProperty?.imageLists != null)
+                if (saveImage?.imageList != null)
                 {
-                    changeProperty.imageLists.Clear();
+                    saveImage.imageList.Clear(); // xóa danh sách ảnh cũ 
                 }
                 else
                 {
-                    changeProperty.imageLists = new ObservableCollection<ImageData>();
+                    saveImage.imageList = new ObservableCollection<ImageData>(); // khởi tạo danh sách ảnh mới 
                 }
                 await Task.Delay(3000);
                 progressBarLoad.Visibility = Visibility.Collapsed;
@@ -225,33 +216,26 @@ namespace Register1.View
             {
                 _imageFiles = Directory.GetFiles(folderImage, "*.png");
                 _currentImageIndex = 0; // đặt chỉ số ảnh hiện tại về 0
-                foreach (string file in _imageFiles)
+                foreach (string imageFile in _imageFiles)
                 {
                     BitmapImage bitmapImage = new BitmapImage();
                     bitmapImage.BeginInit();
-                    bitmapImage.UriSource = new Uri(file, UriKind.RelativeOrAbsolute);
+                    bitmapImage.UriSource = new Uri(imageFile, UriKind.RelativeOrAbsolute);
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapImage.EndInit();
                     bitmapImage.Freeze();
-                    ImageData image = new ImageData
+
+                    ImageData dataImage = new ImageData
                     {
                         imageBitMap = bitmapImage,
-                        imagePath = file // đường dẫn đến ảnh 
+                       // gán ảnh vào thuộc tính selectImage của đối tượng DataImage
+                        imagePath = imageFile // đường dẫn đến ảnh 
                     };
-
-                    changeProperty.imageLists.Add(image);
-
-                    changeProperty.imageSelected = bitmapImage;
+                    saveImage.imageList.Add(dataImage);
                 }
-                if (_imageFiles.Length > 0)
-                {
-
+              
                     await DisplayImageFromPath(_imageFiles[_currentImageIndex]);
-                }
-                else
-                {
-                    MessageBox.Show("Không tìm thấy ảnh trong thư mục đã chọn.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+             
 
             }
             catch (Exception ex)
@@ -285,7 +269,7 @@ namespace Register1.View
             imageData.CacheOption = BitmapCacheOption.OnLoad;
             imageData.EndInit();
             imageData.Freeze();
-            changeProperty.imageSelected = imageData;
+            saveImage.imageBitMap = imageData;
 
         }
 
@@ -296,16 +280,16 @@ namespace Register1.View
             if (imageDelete != null)
             {
 
-                changeProperty.imageLists.Remove(imageDelete); // xóa ảnh trong ImageList
+               saveImage.imageList.Remove(imageDelete); // xóa ảnh trong ImageList
 
                 string imagePath = imageDelete.imagePath; // lấy đường dẫn từ image path 
 
                 File.Delete(imagePath); // xóa ảnh trong thư mục 
 
                 _imageFiles = Directory.GetFiles(FrameFolderPath, "*.png"); // lấy lại danh sách ảnh trong thư mục
-                if (changeProperty.imageLists.Count == 0)
+                if (saveImage.imageList.Count == 0)
                 {
-                    changeProperty.imageSelected = null; // nếu không còn ảnh nào thì xóa ảnh trong disPlayImage
+                    saveImage.imageList = null; // nếu không còn ảnh nào thì xóa ảnh trong disPlayImage
                 }
             }
         }
@@ -348,29 +332,19 @@ namespace Register1.View
         private void btn_DeleteImage(object sender, RoutedEventArgs e)
         {
 
-            // Lấy ảnh được chọn trong ListBox
             if (lbxImageSource.SelectedItem is ImageData selectedImage)
             {
 
-                // 1. Xóa ảnh khỏi ObservableCollection (imageLists)
-                changeProperty.imageLists.Remove(selectedImage);
+                saveImage.imageList.Remove(selectedImage);
 
-                // 2. Xóa ảnh khỏi thư mục
                 if (File.Exists(selectedImage.imagePath))
                 {
                     File.Delete(selectedImage.imagePath);
                 }
 
-                // 3. Xóa ảnh khỏi Image control (disPlayImage)
-                if (changeProperty.imageSelected == selectedImage.imageBitMap)
+                if (saveImage.imageList.Count == 0)
                 {
-                    changeProperty.imageSelected = null; // Ẩn ảnh hiển thị
-                }
-
-                // 4. Thông báo nếu không còn ảnh nào
-                if (changeProperty.imageLists.Count == 0)
-                {
-                    changeProperty.imageSelected = null;
+                    saveImage.imageBitMap =  null;
                     MessageBox.Show("No more images available.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
@@ -389,7 +363,8 @@ namespace Register1.View
             bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
             bitmapImage.EndInit();
             bitmapImage.Freeze();
-            changeProperty.imageSelected = bitmapImage;
+       
+            saveImage.imageBitMap = bitmapImage; // gán ảnh vào thuộc tính selectImage của đối tượng DataImage 
 
         }
 
@@ -397,11 +372,9 @@ namespace Register1.View
 
         private void select_Image(object sender, SelectionChangedEventArgs e)
         {
-            //// Kiểm tra xem item được chọn trong ListBox có phải là kiểu ImageData không
             if (lbxImageSource.SelectedItem is ImageData selectedImage)
             {
-                // Cập nhật imageSelected trong ViewModel
-                changeProperty.imageSelected = selectedImage.imageBitMap;
+                saveImage.imageBitMap = selectedImage.imageBitMap;
             }
         }
     }
