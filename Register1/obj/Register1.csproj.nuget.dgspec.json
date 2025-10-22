@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Do excercise\\_Project Program\\7.Register1\\Register1\\Register1.csproj": {}
+    "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj": {}
   },
   "projects": {
-    "E:\\Do excercise\\_Project Program\\7.Register1\\Register1\\Register1.csproj": {
+    "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Do excercise\\_Project Program\\7.Register1\\Register1\\Register1.csproj",
+        "projectUniqueName": "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj",
         "projectName": "Register1",
-        "projectPath": "E:\\Do excercise\\_Project Program\\7.Register1\\Register1\\Register1.csproj",
-        "packagesPath": "C:\\Users\\NGUYEN TRUONG\\.nuget\\packages\\",
-        "outputPath": "E:\\Do excercise\\_Project Program\\7.Register1\\Register1\\obj\\",
+        "projectPath": "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj",
+        "packagesPath": "C:\\Users\\Truongnd\\.nuget\\packages\\",
+        "outputPath": "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\NGUYEN TRUONG\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Truongnd\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,7 +40,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0-windows7.0": {
@@ -62,6 +57,10 @@
             "MahApps.Metro.IconPacks.Material": {
               "target": "Package",
               "version": "[5.1.0, )"
+            },
+            "Microsoft.Xaml.Behaviors.Wpf": {
+              "target": "Package",
+              "version": "[1.1.135, )"
             }
           },
           "imports": [
@@ -83,7 +82,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

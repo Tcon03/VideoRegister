@@ -153,7 +153,11 @@ namespace Register1.View
                 progressBarLoad.Visibility = Visibility.Visible;
 
                 string timeInputVideo = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string folderFrame = System.IO.Path.GetFileNameWithoutExtension(videoPlayer.Source.LocalPath);
+                Debug.WriteLine("Time Input Video: " + timeInputVideo); 
+                
+                string folderFrame = System.IO.Path.GetFileNameWithoutExtension(videoPlayer.Source.LocalPath); 
+                Debug.WriteLine("Folder Frame: " + folderFrame);
+
                 string resultFolder = $"{folderFrame}_{timeInputVideo}";
 
                 FrameFolderPath = System.IO.Path.Combine("FrameImage", resultFolder);

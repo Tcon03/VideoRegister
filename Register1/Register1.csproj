@@ -10,12 +10,16 @@
 
   <ItemGroup>
     <None Remove="Font\image01.png" />
+    <None Remove="Font\Nexa.ttf" />
     <None Remove="Images\anhNen.jpg" />
     <None Remove="Images\FaceIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Font\image01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Font\Nexa.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\anhNen.jpg">
@@ -30,6 +34,7 @@
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
     <PackageReference Include="FontAwesome" Version="4.7.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="5.1.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
 </Project>
