@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/image01.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("font/nexa.ttf")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/anhnen.jpg")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/faceicon.png")]
 

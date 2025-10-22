@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Register1.View"
          xmlns:Icon ="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:fa="http://schemas.fontawesome.io/icons/"
+       xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         Icon="/Images/FaceIcon.png"
         SizeChanged="Window_SizeChanged"
@@ -62,7 +62,7 @@
                  Margin="10"
                  Background="LightGray">
 
-                <Grid >
+                <Grid>
                     <MediaElement 
                        Name="videoPlayer"
                        Width="auto"
@@ -77,30 +77,27 @@
                              Kind="Pause" 
                              Style="{StaticResource icon}"
                              Name="playPauseIcon"
-                             MouseDown="PauseVideo"
-                         />
+                             MouseDown="PauseVideo"/>
+
 
 
                         <TextBlock x:Name="timeDisplay" 
                                FontWeight="Bold"
                                 Foreground="Black"
                                    Height="30"
-                                  Margin="10 20 10 0"
-                                   />
+                                  Margin="10 20 10 0"/>
 
                         <Icon:PackIconMaterial 
                              Kind="Rewind10" 
                              Style="{StaticResource icon}"
                              MouseDown="RewindVideo"
-                             Name="backVideo"
-                         />
+                             Name="backVideo"/>
 
                         <Icon:PackIconMaterial 
                              Kind="VolumeHigh" 
                              Style="{StaticResource icon}"
                              MouseDown="MuteVideo"
-                              Name="muteVideoOf"
-                         />
+                              Name="muteVideoOf"/>
 
                         <Slider Name="volumeSlider"
                              Margin = "10 20 0 0"
@@ -302,7 +299,7 @@
                             <DataTemplate>
                                 <Grid Width="100" Height="100">
                                     <StackPanel Orientation="Horizontal" >
-           
+
                                         <Image Source="{Binding imageBitMap, 
                                             UpdateSourceTrigger=PropertyChanged 
                                             ,Mode=TwoWay}" 
