@@ -14,6 +14,9 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverterLoaded"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -28,11 +31,11 @@
             </Grid.RowDefinitions>
 
             <Button 
-                    Name="upLoad"
-                    Margin="10 10 0 0"
+                Name="upLoad"
+                Margin="10 10 0 0"
                 Command="{Binding UploadCommand}"
                 CommandParameter="{ Binding ElementName=_this}"
-                    Style="{StaticResource btnUpLoad }">
+                Style="{StaticResource btnUpLoad }">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial 
                             Kind="Upload"
@@ -53,34 +56,28 @@
 
                     <MediaElement 
                                Name="videoPlayer"
-                               Width="auto"
+                               Stretch= "Uniform"
                                LoadedBehavior="Manual"
                                Source="{Binding VideoSource}"
                                Volume="{Binding Volume, Mode=TwoWay}"
                                IsMuted="{Binding IsMuted, Mode=TwoWay}">
                         <i:Interaction.Triggers>
-                            <i:DataTrigger Binding="{Binding IsPlaying}" Value="true">
-                                <i:CallMethodAction TargetObject="{Binding ElementName=videoPlayer}"
-                                                    MethodName="Play"/>
+                            <i:DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                <i:CallMethodAction TargetObject="{x:Reference videoPlayer}" MethodName="Play"/>
                             </i:DataTrigger>
-                            <i:DataTrigger Binding="{Binding IsPlaying}" Value="false">
-                                <i:CallMethodAction TargetObject="{Binding ElementName=videoPlayer}"
-                                                    MethodName="Pause"/>
+                            <i:DataTrigger Binding="{Binding IsPlaying}" Value="False">
+                                <i:CallMethodAction TargetObject="{x:Reference videoPlayer}" MethodName="Pause"/>
                             </i:DataTrigger>
                         </i:Interaction.Triggers>
-                        
-                        
                     </MediaElement>
 
                     <StackPanel VerticalAlignment="Bottom" 
+                                Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
                                 HorizontalAlignment="Center" 
                                 Orientation="Horizontal">
-
-                        <!--<Icon:PackIconMaterial Kind="Play" 
-                                                   Style="{StaticResource icon}"/>-->
                         <Button Command="{Binding PlayPauseCommand}"
                                 Style="{StaticResource btnIcon}"
-                                Margin="0 10 5 0"
+                                 Margin="5 0 5 0"
                                 ToolTip="Play/Pause">
                             <Icon:PackIconMaterial>
                                 <Icon:PackIconMaterial.Style>
@@ -95,8 +92,40 @@
                                 </Icon:PackIconMaterial.Style>
                             </Icon:PackIconMaterial>
                         </Button>
+                        <TextBlock 
+                                   Name="timeDisplay"
+                                   Margin="5 0 5 0"
+                                   FontSize="15"
+                                   FontWeight="DemiBold"
+                                   VerticalAlignment="Center" />
 
-                        <Slider Margin="0 20 0 0"
+                        <Button  Margin="5 0 5 0"
+                                 Click="Rewind_Click"
+                                 IsEnabled="{Binding IsLoaded}"
+                                 Style="{StaticResource btnIcon}">
+                            <Icon:PackIconMaterial Kind="Rewind10"
+                                                   Style="{StaticResource icon}"/>
+                        </Button>
+
+                        <Button Style="{StaticResource btnIcon}"
+                                Command="{Binding MuteCommand}"
+                                CommandParameter="{Binding ElementName=_this}"
+                                Margin="5 0 5 0">
+                            <Icon:PackIconMaterial>
+                                <Icon:PackIconMaterial.Style>
+                                    <Style BasedOn="{StaticResource icon}" TargetType="Icon:PackIconMaterial">
+                                        <Setter Property="Kind" Value="VolumeHigh"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMuted}" Value="True">
+                                                <Setter Property="Kind" Value="VolumeOff"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Icon:PackIconMaterial.Style>
+                            </Icon:PackIconMaterial>
+                        </Button>
+
+                        <Slider Margin="5 12 0  0"
                                 TickPlacement="BottomRight"
                                 Maximum="10"
                                 TickFrequency="1"
@@ -112,14 +141,13 @@
                                     <Setter Property="Width" Value="40"/>
                                     <Setter Property="Height" Value="30"/>
                                     <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Margin" Value="5 10 0 0" />
+                                    <Setter Property="Margin" Value="5 0 0 -2" />
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="TextBox">
                                                 <Border Background="White"
                                                         BorderThickness="0"
                                                         CornerRadius="5">
-
                                                 </Border>
                                             </ControlTemplate>
                                         </Setter.Value>
@@ -146,29 +174,6 @@
         <Grid>
 
         </Grid>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     </Grid>
 </Window>

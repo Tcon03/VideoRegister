@@ -7,12 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Video_Registers.Commands;
 
 namespace Video_Registers.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        #region
         private Uri _videoSource;
         public Uri VideoSource
         {
@@ -34,26 +36,83 @@ namespace Video_Registers.ViewModel
                 _isPlaying = value;
                 Log.Information($"IsPlaying changed to: {_isPlaying}");
                 RaisePropertyChanged(nameof(IsPlaying));
-                (PlayPauseCommand as VfxCommand)?.RaiseCanExecuteChanged();
+                RasieCanExecuteChanged();
+            }
+        }
+        private bool _IsLoaded;   
+        public bool IsLoaded
+        {
+            get => _IsLoaded;
+            set
+            {
+                _IsLoaded = value;
+                Log.Information($"IsLoaded changed to: {_IsLoaded}");
+                RaisePropertyChanged(nameof(IsLoaded));
+                RasieCanExecuteChanged();
+            }
+        }
+
+        private bool _isMuted;
+        public bool IsMuted
+        {
+            get => _isMuted;
+            set
+            {
+                _isMuted = value;
+                Log.Information($"IsMuted changed to: {_isMuted}");
+                RaisePropertyChanged(nameof(IsMuted));
+            }
+        }
+
+        private double _volume;
+        public double Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = value;
+                Log.Information($"Volume changed to: {_volume}");
+                RaisePropertyChanged(nameof(Volume));
             }
         }
 
 
+        #endregion
+
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
+        public ICommand RewindCommand { get; set; }
+        public ICommand MuteCommand { get; set; }
         public MainViewModel()
         {
             UploadCommand = new VfxCommand(OnUpLoad, () => true);
-            PlayPauseCommand = new VfxCommand(OnPlayPause, CanPlayPause);
+            PlayPauseCommand = new VfxCommand(OnPlayPause, () => VideoSource != null);
+            MuteCommand = new VfxCommand(OnMute, () => VideoSource != null);
+            RewindCommand = new VfxCommand(OnRewind, () => VideoSource != null);
         }
 
-        private bool CanPlayPause()
+
+
+        private void OnRewind(object obj)
         {
-            if (VideoSource == null)
-                return false;
-            return true;
+
         }
 
+
+
+
+        private void OnMute(object obj)
+        {
+            IsMuted = !IsMuted;
+        }
+
+        private void RasieCanExecuteChanged()
+        {
+            (PlayPauseCommand as VfxCommand)?.RaiseCanExecuteChanged();
+            (MuteCommand as VfxCommand)?.RaiseCanExecuteChanged();
+            (RewindCommand as VfxCommand)?.RaiseCanExecuteChanged();
+
+        }
         private void OnPlayPause(object obj)
         {
             IsPlaying = !IsPlaying;
@@ -66,7 +125,10 @@ namespace Video_Registers.ViewModel
             if (openFileDialog.ShowDialog() == true)
             {
                 var videoPath = openFileDialog.FileName;
+                //chuyển thành Uri để gán cho MediaElement
                 VideoSource = new Uri(videoPath);
+                IsLoaded = true;
+                IsMuted = false;
                 IsPlaying = true;
             }
         }
