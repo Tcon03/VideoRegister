@@ -52,6 +52,7 @@
             <!-- tạo khoảng trống nội dung -->
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
