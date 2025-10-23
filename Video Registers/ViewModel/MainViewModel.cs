@@ -38,6 +38,7 @@ namespace Video_Registers.ViewModel
             }
         }
 
+
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
         public MainViewModel()

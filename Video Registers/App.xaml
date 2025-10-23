@@ -57,9 +57,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border  CornerRadius="8"
-                        Background="{TemplateBinding Background}">
+                                 Background="{TemplateBinding Background}">
                             <ContentPresenter HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <!-- Đổi NỀN NÚT khi hover/press -->
@@ -79,8 +79,7 @@
             <Setter Property="Height" Value="25"/>
             <Setter Property="Width" Value="30"/>
             <Setter Property="Foreground" Value="White"/>
-            <!-- không tràn khỏi Button -->
-            <!-- Đổi MÀU ICON khi hover (nếu muốn) -->
+            
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="White"/>
