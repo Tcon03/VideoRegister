@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Video_Registers"
+             xmlns:Icon ="http://metro.mahapps.com/winfx/xaml/iconpacks"
              StartupUri="View\MainWindowView.xaml">
     <Application.Resources>
         <Style TargetType="Button" x:Key="BaseButton">
@@ -36,10 +37,54 @@
         </Style>
 
         <Style x:Key ="btnUpLoad"  BasedOn="{StaticResource BaseButton}"  TargetType="Button">
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="Background" Value="#AAD922"/>
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="HorizontalAlignment"
+                    Value="Left"/>
+            <Setter Property="Background" 
+                    Value="#AAD922"/>
+            <Setter Property="Foreground"
+                    Value="Black"/>
         </Style>
 
+
+        <Style x:Key="btnIcon" TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="30"/>
+            <!-- tạo khoảng trống nội dung -->
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border  CornerRadius="8"
+                                 Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Đổi NỀN NÚT khi hover/press -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter  Property="Background" Value="#4F9CAC"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter  Property="Background" Value="LightPink"/>
+                            </Trigger>
+                         
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="icon" TargetType="Icon:PackIconMaterial">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Foreground" Value="White"/>
+            
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>
