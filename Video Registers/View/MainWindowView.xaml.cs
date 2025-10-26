@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +31,9 @@ namespace Video_Registers.View
 
         private void TimeDisplaym()
         {
+            // 1.Tạo Timer đếm nhịp mỗi s 
             DispatcherTimer timer = new DispatcherTimer();
+            // 1s  thì reo 1 lần
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Clip; // Giữ lại Timer
             timer.Start();
@@ -38,19 +41,25 @@ namespace Video_Registers.View
 
         private void Timer_Clip(object? sender, EventArgs e)
         {
-            if (videoPlayer.NaturalDuration.HasTimeSpan)
+            try
             {
-                if (videoPlayer != null)
+
+                if (videoPlayer != null && videoPlayer.NaturalDuration.HasTimeSpan)
                 {
-                    if (videoPlayer.NaturalDuration.HasTimeSpan)
-                    {
-                        timeDisplay.Text = String.Format("{0} / {1}", videoPlayer.Position.ToString(@"mm\:ss"), videoPlayer.NaturalDuration.TimeSpan.ToString(@"mm\:ss"));
-                    }
+                    string thoiGianHienTai = videoPlayer.Position.ToString(@"mm\:ss");
+                    
+                    string tongThoiGian = videoPlayer.NaturalDuration.TimeSpan.ToString(@"mm\:ss");
+
+                    timeDisplay.Text = String.Format($"{thoiGianHienTai} / {tongThoiGian}");
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error updating time display: " + ex.Message);
             }
         }
 
-  
+
 
         private void Rewind_Click(object sender, RoutedEventArgs e)
         {

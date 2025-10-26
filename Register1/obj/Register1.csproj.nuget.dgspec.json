@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj": {}
+    "D:\\Dev\\1.Do excercise\\1_Project\\7. Video Register\\Video Register\\Register1\\Register1.csproj": {}
   },
   "projects": {
-    "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj": {
+    "D:\\Dev\\1.Do excercise\\1_Project\\7. Video Register\\Video Register\\Register1\\Register1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj",
+        "projectUniqueName": "D:\\Dev\\1.Do excercise\\1_Project\\7. Video Register\\Video Register\\Register1\\Register1.csproj",
         "projectName": "Register1",
-        "projectPath": "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\Register1.csproj",
-        "packagesPath": "C:\\Users\\Truongnd\\.nuget\\packages\\",
-        "outputPath": "D:\\1.Devlopment\\3.Video Register\\Video Register\\Register1\\obj\\",
+        "projectPath": "D:\\Dev\\1.Do excercise\\1_Project\\7. Video Register\\Video Register\\Register1\\Register1.csproj",
+        "packagesPath": "C:\\Users\\nguye\\.nuget\\packages\\",
+        "outputPath": "D:\\Dev\\1.Do excercise\\1_Project\\7. Video Register\\Video Register\\Register1\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Truongnd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\nguye\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -82,7 +86,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
