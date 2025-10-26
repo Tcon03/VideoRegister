@@ -39,7 +39,7 @@ namespace Video_Registers.ViewModel
                 RasieCanExecuteChanged();
             }
         }
-        private bool _IsLoaded;   
+        private bool _IsLoaded;
         public bool IsLoaded
         {
             get => _IsLoaded;
@@ -76,30 +76,51 @@ namespace Video_Registers.ViewModel
             }
         }
 
+        private double _frameInterval = 1.0;
+        public double FrameInterval
+        {
+            get => _frameInterval;
+            set
+            {
+                _frameInterval = value;
+                Log.Information($"FrameInterval changed to: {_frameInterval}");
+                RaisePropertyChanged(nameof(FrameInterval));
+            }
+        }
+
 
         #endregion
 
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
-        public ICommand RewindCommand { get; set; }
         public ICommand MuteCommand { get; set; }
+        public ICommand ClearCommand { get; set; }
+        public ICommand GenerateFramesCommands { get; set; }
+
+
         public MainViewModel()
         {
             UploadCommand = new VfxCommand(OnUpLoad, () => true);
             PlayPauseCommand = new VfxCommand(OnPlayPause, () => VideoSource != null);
             MuteCommand = new VfxCommand(OnMute, () => VideoSource != null);
-            RewindCommand = new VfxCommand(OnRewind, () => VideoSource != null);
+            ClearCommand = new VfxCommand(OnClear, () => IsLoaded);
+            GenerateFramesCommands = new VfxCommand(OnGenerate, () => VideoSource !=null);
+
         }
 
-
-
-        private void OnRewind(object obj)
+        private void OnGenerate(object obj)
         {
-
+            throw new NotImplementedException();
         }
 
+        private void OnClear(object obj)
+        {
+            VideoSource = null;
+            IsLoaded = false;
+            IsMuted = false;
+            IsPlaying = false;
 
-
+        }
 
         private void OnMute(object obj)
         {
@@ -110,7 +131,8 @@ namespace Video_Registers.ViewModel
         {
             (PlayPauseCommand as VfxCommand)?.RaiseCanExecuteChanged();
             (MuteCommand as VfxCommand)?.RaiseCanExecuteChanged();
-            (RewindCommand as VfxCommand)?.RaiseCanExecuteChanged();
+            (ClearCommand as VfxCommand)?.RaiseCanExecuteChanged(); 
+            (GenerateFramesCommands as VfxCommand)?.RaiseCanExecuteChanged();
 
         }
         private void OnPlayPause(object obj)

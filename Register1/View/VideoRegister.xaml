@@ -36,7 +36,9 @@
             </Grid.RowDefinitions>
 
             <!--xử lý hàng 1-->
-            <Grid >
+            <Grid>
+                <StackPanel Orientation="Horizontal" >
+                    
                 <Button Name="upLoad"
                      Margin="10"
                      Style="{StaticResource btnUpLoad }"    
@@ -53,7 +55,10 @@
                              Margin="10,0,0,0"
                             VerticalAlignment="Center"/>
                     </StackPanel>
-                </Button>
+                </Button> 
+                    
+                </StackPanel>
+
                 <!--kết thúc hàng 1-->
             </Grid>
 

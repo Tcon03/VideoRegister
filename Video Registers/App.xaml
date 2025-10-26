@@ -45,6 +45,16 @@
                     Value="Black"/>
         </Style>
 
+        <Style x:Key="btnGenerate" TargetType="Button" BasedOn="{StaticResource btnUpLoad}">
+            <Setter Property="Background" 
+                    Value="#686DF4"/>
+        </Style>
+        
+        <Style x:Key="btnclear" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background"
+                    Value="Red"/>
+        </Style>
+
 
         <Style x:Key="btnIcon" TargetType="Button">
             <Setter Property="Height" Value="35"/>
@@ -70,7 +80,7 @@
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter  Property="Background" Value="LightPink"/>
                             </Trigger>
-                         
+
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -80,7 +90,7 @@
             <Setter Property="Height" Value="25"/>
             <Setter Property="Width" Value="30"/>
             <Setter Property="Foreground" Value="White"/>
-            
+
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="White"/>

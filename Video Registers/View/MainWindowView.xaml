@@ -8,6 +8,7 @@
         xmlns:vm ="clr-namespace:Video_Registers.ViewModel"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
         x:Name="_this"
         Icon="/Image/FaceIcon.png"
         Title="Video Register" Height="720" Width="1280">
@@ -30,23 +31,42 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Button 
-                Name="upLoad"
-                Margin="10 10 0 0"
-                Command="{Binding UploadCommand}"
-                CommandParameter="{ Binding ElementName=_this}"
-                Style="{StaticResource btnUpLoad }">
-                <StackPanel Orientation="Horizontal">
-                    <Icon:PackIconMaterial 
+            <StackPanel Orientation="Horizontal">
+
+                <Button 
+                    Margin="10 10 0 0"
+                    Command="{Binding UploadCommand}"
+                    CommandParameter="{ Binding ElementName=_this}"
+                    Style="{StaticResource btnUpLoad }">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial 
                             Kind="Upload"
                             VerticalAlignment="Center"
                             Margin="0 0 10 0"/>
-                    <TextBlock Text="Upload Video " 
+                        <TextBlock Text="Upload Video " 
                                FontSize="16"
                                FontWeight="DemiBold"
                                VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
+                    </StackPanel>
+                </Button>
+                <Button 
+                    Margin="10 10 0 0"
+                    Command="{Binding ClearCommand}"
+                    CommandParameter="{ Binding ElementName=_this}"
+                    Style="{StaticResource btnclear }">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial 
+                            Kind="Delete"
+                            VerticalAlignment="Center"
+                            Margin="0 0 10 0"/>
+                        <TextBlock Text="Clear " 
+                               FontSize="16"
+                               FontWeight="DemiBold"
+                               VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
 
             <Border Background="LightGray"
                     Grid.Row="1"
@@ -72,8 +92,8 @@
                     </MediaElement>
 
                     <StackPanel VerticalAlignment="Bottom" 
-                                Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
                                 HorizontalAlignment="Center" 
+                                Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
                                 Orientation="Horizontal">
                         <Button Command="{Binding PlayPauseCommand}"
                                 Style="{StaticResource btnIcon}"
@@ -114,7 +134,8 @@
                             <Icon:PackIconMaterial>
                                 <Icon:PackIconMaterial.Style>
                                     <Style BasedOn="{StaticResource icon}" TargetType="Icon:PackIconMaterial">
-                                        <Setter Property="Kind" Value="VolumeHigh"/>
+                                        <Setter Property="Kind" 
+                                                Value="VolumeHigh"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsMuted}" Value="True">
                                                 <Setter Property="Kind" Value="VolumeOff"/>
@@ -133,27 +154,12 @@
                                 Value="{Binding Volume, Mode=TwoWay}" />
 
                         <TextBox Text="{Binding Volume, Mode=OneWay, StringFormat='F0'}"
+                                 VerticalAlignment="Center"
+                                 FontSize="20"
+                                 Margin="5 5 0 0"
+                                 Width="30"
                                  IsReadOnly="True">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="FontWeight" Value="DemiBold"/>
-                                    <Setter Property="Width" Value="40"/>
-                                    <Setter Property="Height" Value="30"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="Margin" Value="5 0 0 -2" />
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="TextBox">
-                                                <Border Background="White"
-                                                        BorderThickness="0"
-                                                        CornerRadius="5">
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </TextBox.Style>
+
                         </TextBox>
                     </StackPanel>
 
@@ -171,8 +177,55 @@
                Background="LightPink">
         </GridSplitter>
 
-        <Grid>
+        <Grid Grid.Column="2">
+            <WrapPanel Margin="15" Grid.Row="0">
+                <!--button item 1-->
+                
+                <Button Name="genImage"
+                        Command="{Binding GenerateFramesCommands}"
+                        CommandParameter="{Binding ElementName=_this}"
+                        Style="{StaticResource  btnGenerate}" >
 
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial 
+                                Kind="ImageArea" 
+                                 Foreground="White"
+                                Height="15" 
+                                VerticalAlignment="Center"
+                                Width="20" />
+
+                        <TextBlock
+                            Name="disPlay"
+                            Foreground="White"
+                            Text="Generate Image" 
+                            Margin="10,0,0,0"
+                            VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                </Button>
+
+                <!--item 2-->
+                <Label Content="Tần số lấy ảnh "
+                       VerticalAlignment="Center"
+                       Margin="10 0 0 0"
+                       FontSize="13"/>
+
+                <!--item 3 điều chỉnh tốc độ-->
+                <toolkit:DoubleUpDown 
+                         Increment="1"  
+                          Width="50"
+                          Height="40"
+                          Minimum="1"
+                          Value="{Binding FrameInterval, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                          Maximum="10"
+                          FontSize="15"/>
+                <Label Content=" giây/1 ảnh  "
+                       VerticalAlignment="Center"
+                       Margin="0 0 0 0"
+                       FontSize="13"/>
+
+
+            </WrapPanel>
         </Grid>
 
     </Grid>
