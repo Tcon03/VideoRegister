@@ -92,6 +92,8 @@
 
         <Style x:Key="btnNextPre" TargetType="Button">
             <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            
             <Setter Property="MinWidth" Value="30"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
