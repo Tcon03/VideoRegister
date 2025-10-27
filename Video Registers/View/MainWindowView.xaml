@@ -198,12 +198,12 @@
                               />
 
                         <TextBlock
-                          FontSize="16"
-                         FontWeight="DemiBold"
-                         Name="disPlay"
-                         Foreground="White"
-                         Text="Generate Image" 
-                         VerticalAlignment="Center"/>
+                              FontSize="16"
+                             FontWeight="DemiBold"
+                             Name="disPlay"
+                             Foreground="White"
+                             Text="Generate Image" 
+                             VerticalAlignment="Center"/>
                     </StackPanel>
 
                 </Button>
@@ -236,9 +236,9 @@
                 <Border CornerRadius="20" 
                         Margin="10"
                         Background="LightGray">
-                    
-                    
-                    <Grid Margin="10">
+
+
+                    <Grid Margin="10" >
                         <Button HorizontalAlignment="Left" 
                                 Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 
