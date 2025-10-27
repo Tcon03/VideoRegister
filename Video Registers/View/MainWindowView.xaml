@@ -31,10 +31,9 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal">
-
+            <StackPanel Orientation="Horizontal"
+                          Margin="10 10 0 0">
                 <Button 
-                    Margin="10 10 0 0"
                     Command="{Binding UploadCommand}"
                     CommandParameter="{ Binding ElementName=_this}"
                     Style="{StaticResource btnUpLoad }">
@@ -50,10 +49,10 @@
                     </StackPanel>
                 </Button>
                 <Button 
-                    Margin="10 10 0 0"
-                    Command="{Binding ClearCommand}"
-                    CommandParameter="{ Binding ElementName=_this}"
-                    Style="{StaticResource btnclear }">
+                    Margin="10 0 0 0"
+                        Command="{Binding ClearCommand}"
+                        CommandParameter="{ Binding ElementName=_this}"
+                        Style="{StaticResource btnclear }">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
                             Kind="Delete"
@@ -73,7 +72,6 @@
                     Margin="10"
                     CornerRadius="20">
                 <Grid Margin="10" >
-
                     <MediaElement 
                                Name="videoPlayer"
                                Stretch= "Uniform"
@@ -96,7 +94,8 @@
                                 Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
                                 Orientation="Horizontal">
                         <Button Command="{Binding PlayPauseCommand}"
-                                Style="{StaticResource btnIcon}"
+                                Style="{StaticResource  btnNextPre}"
+                                
                                  Margin="5 0 5 0"
                                 ToolTip="Play/Pause">
                             <Icon:PackIconMaterial>
@@ -178,55 +177,88 @@
         </GridSplitter>
 
         <Grid Grid.Column="2">
-            <WrapPanel Margin="15" Grid.Row="0">
-                <!--button item 1-->
-                
-                <Button Name="genImage"
-                        Command="{Binding GenerateFramesCommands}"
-                        CommandParameter="{Binding ElementName=_this}"
-                        Style="{StaticResource  btnGenerate}" >
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal"
+                        Margin="10 10 0 0">
+                <Button 
+                     Command="{Binding GenerateFramesCommands}"
+                     CommandParameter="{Binding ElementName=_this}"
+                     Style="{StaticResource  btnGenerate}">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
-                                Kind="ImageArea" 
-                                 Foreground="White"
-                                Height="15" 
-                                VerticalAlignment="Center"
-                                Width="20" />
+                             Kind="ImageArea" 
+                              Foreground="White"
+                              Margin="0 0 10 0"
+                             VerticalAlignment="Center"
+                              />
 
                         <TextBlock
-                            Name="disPlay"
-                            Foreground="White"
-                            Text="Generate Image" 
-                            Margin="10,0,0,0"
-                            VerticalAlignment="Center"/>
+                          FontSize="16"
+                         FontWeight="DemiBold"
+                         Name="disPlay"
+                         Foreground="White"
+                         Text="Generate Image" 
+                         VerticalAlignment="Center"/>
                     </StackPanel>
 
                 </Button>
-
-                <!--item 2-->
                 <Label Content="Tần số lấy ảnh "
-                       VerticalAlignment="Center"
-                       Margin="10 0 0 0"
-                       FontSize="13"/>
-
-                <!--item 3 điều chỉnh tốc độ-->
+                        VerticalAlignment="Center"
+                        Margin="10 0 0 0"
+                        FontSize="13"/>
                 <toolkit:DoubleUpDown 
-                         Increment="1"  
-                          Width="50"
-                          Height="40"
-                          Minimum="1"
-                          Value="{Binding FrameInterval, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                          Maximum="10"
-                          FontSize="15"/>
+                          Increment="1"  
+                           Width="50"
+                           Height="40"
+                           Minimum="1"
+                           Value="{Binding FrameInterval, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                           Maximum="10"
+                           FontSize="15"/>
                 <Label Content=" giây/1 ảnh  "
-                       VerticalAlignment="Center"
-                       Margin="0 0 0 0"
-                       FontSize="13"/>
+                        VerticalAlignment="Center"
+                        Margin="0 0 0 0"
+                        FontSize="13"/>
+            </StackPanel>
 
 
-            </WrapPanel>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Border CornerRadius="20" 
+                        Margin="10"
+                        Background="LightGray">
+                    
+                    <Grid Margin="10">
+                        <Button HorizontalAlignment="Left" 
+                                Style="{StaticResource btnNextPre}">
+                            <Icon:PackIconMaterial 
+                                 Style="{StaticResource icon}"
+                                 MinHeight="35"
+                                 MinWidth="30"
+                                 Kind="ArrowLeft" />
+                        </Button>
+
+                        <Button HorizontalAlignment="Right" 
+                               Style="{StaticResource btnNextPre}">
+                            <Icon:PackIconMaterial 
+                                    MinHeight="35"
+                                    MinWidth="30"
+                                    Style="{StaticResource icon}"
+                                    Kind="ArrowRight" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+
         </Grid>
-
     </Grid>
 </Window>

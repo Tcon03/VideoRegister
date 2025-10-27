@@ -5,6 +5,8 @@
              xmlns:Icon ="http://metro.mahapps.com/winfx/xaml/iconpacks"
              StartupUri="View\MainWindowView.xaml">
     <Application.Resources>
+
+        <!--Base Button Style-->
         <Style TargetType="Button" x:Key="BaseButton">
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="MaxHeight" Value="50"/>
@@ -36,29 +38,9 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key ="btnUpLoad"  BasedOn="{StaticResource BaseButton}"  TargetType="Button">
-            <Setter Property="HorizontalAlignment"
-                    Value="Left"/>
-            <Setter Property="Background" 
-                    Value="#AAD922"/>
-            <Setter Property="Foreground"
-                    Value="Black"/>
-        </Style>
-
-        <Style x:Key="btnGenerate" TargetType="Button" BasedOn="{StaticResource btnUpLoad}">
-            <Setter Property="Background" 
-                    Value="#686DF4"/>
-        </Style>
-        
-        <Style x:Key="btnclear" TargetType="Button" BasedOn="{StaticResource BaseButton}">
-            <Setter Property="Background"
-                    Value="Red"/>
-        </Style>
-
-
+        <!-- Button bao Icon Style-->
         <Style x:Key="btnIcon" TargetType="Button">
-            <Setter Property="Height" Value="35"/>
-            <Setter Property="Width" Value="30"/>
+         
             <!-- tạo khoảng trống nội dung -->
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -68,12 +50,11 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border  CornerRadius="8"
-                                 Background="{TemplateBinding Background}">
+                          Background="{TemplateBinding Background}">
                             <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <!-- Đổi NỀN NÚT khi hover/press -->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter  Property="Background" Value="#4F9CAC"/>
                             </Trigger>
@@ -86,11 +67,63 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!--Upload Button Style-->
+        <Style x:Key ="btnUpLoad"  BasedOn="{StaticResource BaseButton}"  TargetType="Button">
+            <Setter Property="HorizontalAlignment"
+                    Value="Left"/>
+            <Setter Property="Background" 
+                    Value="#AAD922"/>
+            <Setter Property="Foreground"
+                    Value="Black"/>
+        </Style>
+
+        <!--Generate Button Style-->
+        <Style x:Key="btnGenerate" TargetType="Button" BasedOn="{StaticResource btnUpLoad}">
+            <Setter Property="Background" 
+                    Value="#686DF4"/>
+        </Style>
+
+        <!--Clear Button Style-->
+        <Style x:Key="btnclear" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+            <Setter Property="Background"
+                    Value="Red"/>
+        </Style>
+
+        <Style x:Key="btnNextPre" TargetType="Button">
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="MinWidth" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border  CornerRadius="8"
+                                 Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter  Property="Background" Value="#4F9CAC"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter  Property="Background" Value="LightPink"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!--style Icon-->
         <Style x:Key="icon" TargetType="Icon:PackIconMaterial">
             <Setter Property="Height" Value="25"/>
             <Setter Property="Width" Value="30"/>
             <Setter Property="Foreground" Value="White"/>
-
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="White"/>

@@ -105,7 +105,6 @@ namespace Video_Registers.ViewModel
             MuteCommand = new VfxCommand(OnMute, () => VideoSource != null);
             ClearCommand = new VfxCommand(OnClear, () => IsLoaded);
             GenerateFramesCommands = new VfxCommand(OnGenerate, () => VideoSource !=null);
-
         }
 
         private void OnGenerate(object obj)
@@ -119,7 +118,6 @@ namespace Video_Registers.ViewModel
             IsLoaded = false;
             IsMuted = false;
             IsPlaying = false;
-
         }
 
         private void OnMute(object obj)
