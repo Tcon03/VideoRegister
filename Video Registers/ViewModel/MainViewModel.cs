@@ -6,9 +6,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Video_Registers.Commands;
+using Video_Registers.Repositories;
 
 namespace Video_Registers.ViewModel
 {
@@ -91,11 +93,15 @@ namespace Video_Registers.ViewModel
 
         #endregion
 
+        private readonly FfmpegRepository _ffmpegRepository;
+
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
         public ICommand MuteCommand { get; set; }
         public ICommand ClearCommand { get; set; }
         public ICommand GenerateFramesCommands { get; set; }
+
+        public ICommand DownloadFFmpegCommands { get; set; }
 
 
         public MainViewModel()
@@ -104,12 +110,31 @@ namespace Video_Registers.ViewModel
             PlayPauseCommand = new VfxCommand(OnPlayPause, () => VideoSource != null);
             MuteCommand = new VfxCommand(OnMute, () => VideoSource != null);
             ClearCommand = new VfxCommand(OnClear, () => IsLoaded);
-            GenerateFramesCommands = new VfxCommand(OnGenerate, () => VideoSource !=null);
+            GenerateFramesCommands = new VfxCommand(OnGenerate, () => VideoSource != null);
+            _ffmpegRepository = new FfmpegRepository();
+            
+        }
+
+        public async void OnDownloadFFmpeg()
+        {
+            if(_ffmpegRepository._IsInstalled)
+            {
+                Log.Information("FFmpeg is already installed. No need to download.");
+                return;
+            }
+            try
+            {
+                await _ffmpegRepository.DownloadFfmpegAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error downloading FFmpeg: " + ex.Message);
+            }
         }
 
         private void OnGenerate(object obj)
         {
-            throw new NotImplementedException();
+            OnDownloadFFmpeg();
         }
 
         private void OnClear(object obj)
@@ -129,7 +154,7 @@ namespace Video_Registers.ViewModel
         {
             (PlayPauseCommand as VfxCommand)?.RaiseCanExecuteChanged();
             (MuteCommand as VfxCommand)?.RaiseCanExecuteChanged();
-            (ClearCommand as VfxCommand)?.RaiseCanExecuteChanged(); 
+            (ClearCommand as VfxCommand)?.RaiseCanExecuteChanged();
             (GenerateFramesCommands as VfxCommand)?.RaiseCanExecuteChanged();
 
         }

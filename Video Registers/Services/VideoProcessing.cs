@@ -13,12 +13,15 @@ namespace Video_Registers.Services
     {
         public async Task GenerateImageAsync(string videoPath , string folderOutput , double frameInterval)
         {
+            string folderFrame = Path.GetFileNameWithoutExtension(videoPath);
+
 
         }
         public async Task RunFFmpegCommand(string commadFfmpeg)
         {
             string ffmpegPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "ffmpeg.exe");
             Log.Information("FFmpeg Path: {ffmpegPath}", ffmpegPath);
+
             if (!File.Exists(ffmpegPath))
             {
                 Debug.WriteLine("===== Not found file FFmpeg  =====" + ffmpegPath);
