@@ -3,6 +3,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Video_Registers.Commands;
 using Video_Registers.Repositories;
+using Video_Registers.Services;
 
 namespace Video_Registers.ViewModel
 {
@@ -89,12 +91,24 @@ namespace Video_Registers.ViewModel
                 RaisePropertyChanged(nameof(FrameInterval));
             }
         }
+        private bool _frameProcess;
+        public bool ProcessFrame
+        {
+            get => _frameProcess;
+            set
+            {
+                _frameProcess = value;
+                Log.Information($"FrameImage changed to: {_frameProcess}");
+                RaisePropertyChanged(nameof(ProcessFrame));
+            }
+        }
+        private string _tempPath;
 
 
         #endregion
 
-        private readonly FfmpegRepository _ffmpegRepository;
-
+        private readonly FfmpegRepository _ffmpegRepository = new FfmpegRepository();
+        private readonly VideoProcessing _videoProcessing;
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
         public ICommand MuteCommand { get; set; }
@@ -111,13 +125,13 @@ namespace Video_Registers.ViewModel
             MuteCommand = new VfxCommand(OnMute, () => VideoSource != null);
             ClearCommand = new VfxCommand(OnClear, () => IsLoaded);
             GenerateFramesCommands = new VfxCommand(OnGenerate, () => VideoSource != null);
-            _ffmpegRepository = new FfmpegRepository();
-            
+            _videoProcessing = new VideoProcessing();
+            OnDownloadFFmpeg();
         }
 
         public async void OnDownloadFFmpeg()
         {
-            if(_ffmpegRepository._IsInstalled)
+            if (_ffmpegRepository.IsInstalled)
             {
                 Log.Information("FFmpeg is already installed. No need to download.");
                 return;
@@ -132,9 +146,21 @@ namespace Video_Registers.ViewModel
             }
         }
 
-        private void OnGenerate(object obj)
+        private async void OnGenerate(object obj)
         {
-            OnDownloadFFmpeg();
+            _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Log.Information("TempPath lưu ảnh ở đường dẫn :" + _tempPath);
+            bool processing = await _videoProcessing.GenerateImageAsync(VideoSource.LocalPath, _tempPath, FrameInterval, _ffmpegRepository._ffmpegPath); 
+            if(processing)
+            {
+                MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                ProcessFrame = true; 
+            }
+            else
+            {
+
+                MessageBox.Show("Generate Frame Image Failed!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void OnClear(object obj)
