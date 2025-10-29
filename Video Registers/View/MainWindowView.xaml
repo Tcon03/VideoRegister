@@ -71,7 +71,7 @@
                     Grid.Row="1"
                     Margin="10"
                     CornerRadius="20">
-                <Grid Margin="10" >
+                <Grid Margin="0 " >
                     <MediaElement 
                                Name="videoPlayer"
                                Stretch= "Uniform"
@@ -93,20 +93,23 @@
                                 HorizontalAlignment="Center" 
                                 Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
                                 Orientation="Horizontal">
+
                         <Button Command="{Binding PlayPauseCommand}"
                                 Style="{StaticResource  btnNextPre}"
-                                
-                                 Margin="5 0 5 0"
+                                Margin="5 0 5 0"
                                 ToolTip="Play/Pause">
                             <Icon:PackIconMaterial>
                                 <Icon:PackIconMaterial.Style>
                                     <Style TargetType="Icon:PackIconMaterial" BasedOn="{ StaticResource icon}">
-                                        <Setter Property="Kind" Value="Play"/>
+                                        <Setter Property="Kind"
+                                                    Value="Play">
+                                        </Setter>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsPlaying}" Value="True">
                                                 <Setter Property="Kind" Value="Pause"/>
                                             </DataTrigger>
                                         </Style.Triggers>
+
                                     </Style>
                                 </Icon:PackIconMaterial.Style>
                             </Icon:PackIconMaterial>
@@ -236,9 +239,9 @@
                 <Border CornerRadius="20" 
                         Margin="10"
                         Background="LightGray">
-
-
-                    <Grid Margin="10" >
+                    <Grid  
+                         Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}"
+                          Margin="10">
                         <Button HorizontalAlignment="Left" 
                                 Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 

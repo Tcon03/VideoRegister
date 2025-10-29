@@ -18,18 +18,18 @@ namespace Video_Registers.Repositories
 
         // Cờ (flag) để theo dõi trạng thái, tránh kiểm tra file liên tục
         private string _ffmpegFolderPath;
-        private string _ffmpegPath;
+        public string _ffmpegPath;
 
 
         private bool _isInstalled;
-        public bool _IsInstalled
+        public bool IsInstalled
         {
             get => _isInstalled;
             set
             {
                 _isInstalled = value;
-                Log.Information("FFmpeg installation status changed to: {IsInstalled}", _isInstalled);
-                RaisePropertyChanged(nameof(_IsInstalled));
+                Log.Information("FFmpeg installation status changed to: {IsInstalled}", IsInstalled);
+                RaisePropertyChanged(nameof(IsInstalled));
             }
         }
 
@@ -38,7 +38,7 @@ namespace Video_Registers.Repositories
             InitialFolder();
             //5  Báo cho Xabe biết nơi tìm ffmpeg/ffprobe
             FFmpeg.SetExecutablesPath(_ffmpegFolderPath);
-            _IsInstalled = CheckFfmpegInstalled();
+            IsInstalled = CheckFfmpegInstalled();
 
         }
 
@@ -71,7 +71,7 @@ namespace Video_Registers.Repositories
 
         public async Task DownloadFfmpegAsync()
         {
-            if (_IsInstalled)
+            if (IsInstalled==true)
             {
                 Log.Information("FFmpeg đã có sẵn trong thư mục: {FfmpegPath}", _ffmpegPath);
                 return;
@@ -82,7 +82,7 @@ namespace Video_Registers.Repositories
                 Log.Information("Đang tải FFmpeg vào: {Folder}", _ffmpegFolderPath);
                 await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, _ffmpegFolderPath);
 
-                _IsInstalled = CheckFfmpegInstalled();
+                IsInstalled = CheckFfmpegInstalled();
                 Log.Information("FFmpeg sẵn sàng tại: {Path}", _ffmpegPath);
             }
             catch (Exception ex)
