@@ -16,7 +16,6 @@ namespace Video_Registers.Repositories
     {
 
 
-        // Cờ (flag) để theo dõi trạng thái, tránh kiểm tra file liên tục
         private string _ffmpegFolderPath;
         public string _ffmpegPath;
 
@@ -36,7 +35,6 @@ namespace Video_Registers.Repositories
         public FfmpegRepository()
         {
             InitialFolder();
-            //5  Báo cho Xabe biết nơi tìm ffmpeg/ffprobe
             FFmpeg.SetExecutablesPath(_ffmpegFolderPath);
             IsInstalled = CheckFfmpegInstalled();
 
@@ -81,7 +79,6 @@ namespace Video_Registers.Repositories
                 Log.Information("Đang tải FFmpeg vào: {Folder}", _ffmpegFolderPath);
                 await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, _ffmpegFolderPath);
 
-                // gọi tới check lại trạng thái xem ffmpeg đã được tải về chưa
                 IsInstalled = CheckFfmpegInstalled();
                 Log.Information("FFmpeg sẵn sàng tại: {Path}", _ffmpegPath);
             }

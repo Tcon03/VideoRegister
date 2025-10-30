@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using Video_Registers.Commands;
 using Video_Registers.Model;
@@ -102,6 +103,8 @@ namespace Video_Registers.ViewModel
                 _frameProcess = value;
                 Log.Information($"FrameImage changed to: {_frameProcess}");
                 RaisePropertyChanged(nameof(ProcessFrame));
+
+
             }
         }
         private string _tempFolderPath;
@@ -119,7 +122,7 @@ namespace Video_Registers.ViewModel
             }
         }
 
-        private FrameImage _selectedImage; 
+        private FrameImage _selectedImage;
         public FrameImage SelectedImage
         {
             get => _selectedImage;
@@ -127,17 +130,57 @@ namespace Video_Registers.ViewModel
             {
                 _selectedImage = value;
                 RaisePropertyChanged(nameof(SelectedImage));
+                CurrentFrameIndex = StageImage.IndexOf(SelectedImage);
+
             }
         }
-        private readonly FfmpegRepository _ffmpegRepository = new FfmpegRepository();
+        FfmpegRepository _ffmpegRepository = new FfmpegRepository();
         private readonly VideoProcessing _videoProcessing;
+
+        public string DisplayIndexString
+        {
+            get
+            {
+                return $"{CurrentFrameIndex + 1}/{TotalImage}";
+            }
+        }
+        private int _currentFrameIndex = -1;
+        public int CurrentFrameIndex
+        {
+            get => _currentFrameIndex;
+            set
+            {
+                _currentFrameIndex = value;
+                Log.Information("--- Current Image ---" + _currentFrameIndex);
+                RaisePropertyChanged(nameof(CurrentFrameIndex));
+                RaisePropertyChanged(nameof(DisplayIndexString));
+
+                (NextImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
+                (PreviousImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
+        private int _totalImage;
+        public int TotalImage
+        {
+            get => _totalImage;
+            set
+            {
+                _totalImage = value;
+                RaisePropertyChanged(nameof(TotalImage));
+                RaisePropertyChanged(nameof(DisplayIndexString));
+            }
+
+        }
+
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
         public ICommand MuteCommand { get; set; }
         public ICommand ClearCommand { get; set; }
-        public ICommand GenerateFramesCommands { get; set; }
-
-        public ICommand DownloadFFmpegCommands { get; set; }
+        public ICommand GenerateFramesCommand { get; set; }
+        public ICommand DownloadFFmpegCommand { get; set; }
+        public ICommand NextImageCommand { get; set; }
+        public ICommand PreviousImageCommand { get; set; }
 
 
         public MainViewModel()
@@ -146,9 +189,35 @@ namespace Video_Registers.ViewModel
             PlayPauseCommand = new VfxCommand(OnPlayPause, () => VideoSource != null);
             MuteCommand = new VfxCommand(OnMute, () => VideoSource != null);
             ClearCommand = new VfxCommand(OnClear, () => IsLoaded);
-            GenerateFramesCommands = new VfxCommand(OnGenerate, () => VideoSource != null);
+            GenerateFramesCommand = new VfxCommand(OnGenerate, () => VideoSource != null);
+            NextImageCommand = new VfxCommand(OnNext, CanNext);
+            PreviousImageCommand = new VfxCommand(OnPrevious, CanPrevious);
             _videoProcessing = new VideoProcessing();
             OnDownloadFFmpeg();
+        }
+
+        private bool CanPrevious()
+        {
+            if (CurrentFrameIndex > 0)
+                return true;
+            return false;
+        }
+
+        private void OnPrevious(object obj)
+        {
+            SelectedImage = StageImage[CurrentFrameIndex - 1];
+        }
+
+        private bool CanNext()
+        {
+            if (CurrentFrameIndex < TotalImage - 1)
+                return true;
+            return false;
+        }
+
+        private void OnNext(object obj)
+        {
+            SelectedImage = StageImage[CurrentFrameIndex + 1];
         }
 
         public async void OnDownloadFFmpeg()
@@ -170,16 +239,26 @@ namespace Video_Registers.ViewModel
 
         private async void OnGenerate(object obj)
         {
+
+            var result = MessageBox.Show("Bạn có chắc chắn muốn tạo Frame Image từ video không?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
             _tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Log.Information("TempPath lưu ảnh ở đường dẫn :" + _tempFolderPath);
             bool processing = await _videoProcessing.GenerateImageAsync(VideoSource.LocalPath, _tempFolderPath, FrameInterval, _ffmpegRepository._ffmpegPath);
+
             if (processing)
             {
+
+                // get image từ thư mục tạm
                 var loadImage = _videoProcessing.LoadImageFolder(_tempFolderPath);
-                MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                StageImage = new ObservableCollection<FrameImage>(loadImage); 
+                MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);\
+                StageImage = new ObservableCollection<FrameImage>(loadImage);
                 SelectedImage = StageImage.FirstOrDefault();
                 ProcessFrame = true;
+                TotalImage = StageImage.Count;
 
             }
             else
@@ -207,7 +286,7 @@ namespace Video_Registers.ViewModel
             (PlayPauseCommand as VfxCommand)?.RaiseCanExecuteChanged();
             (MuteCommand as VfxCommand)?.RaiseCanExecuteChanged();
             (ClearCommand as VfxCommand)?.RaiseCanExecuteChanged();
-            (GenerateFramesCommands as VfxCommand)?.RaiseCanExecuteChanged();
+            (GenerateFramesCommand as VfxCommand)?.RaiseCanExecuteChanged();
 
         }
         private void OnPlayPause(object obj)
