@@ -2,6 +2,7 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Video_Registers.Commands;
+using Video_Registers.Model;
 using Video_Registers.Repositories;
 using Video_Registers.Services;
 
@@ -102,11 +104,31 @@ namespace Video_Registers.ViewModel
                 RaisePropertyChanged(nameof(ProcessFrame));
             }
         }
-        private string _tempPath;
-
+        private string _tempFolderPath;
 
         #endregion
 
+        private ObservableCollection<FrameImage> _stageImage;
+        public ObservableCollection<FrameImage> StageImage
+        {
+            get => _stageImage;
+            set
+            {
+                _stageImage = value;
+                RaisePropertyChanged(nameof(StageImage));
+            }
+        }
+
+        private FrameImage _selectedImage; 
+        public FrameImage SelectedImage
+        {
+            get => _selectedImage;
+            set
+            {
+                _selectedImage = value;
+                RaisePropertyChanged(nameof(SelectedImage));
+            }
+        }
         private readonly FfmpegRepository _ffmpegRepository = new FfmpegRepository();
         private readonly VideoProcessing _videoProcessing;
         public ICommand UploadCommand { get; set; }
@@ -148,17 +170,20 @@ namespace Video_Registers.ViewModel
 
         private async void OnGenerate(object obj)
         {
-            _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Log.Information("TempPath lưu ảnh ở đường dẫn :" + _tempPath);
-            bool processing = await _videoProcessing.GenerateImageAsync(VideoSource.LocalPath, _tempPath, FrameInterval, _ffmpegRepository._ffmpegPath); 
-            if(processing)
+            _tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Log.Information("TempPath lưu ảnh ở đường dẫn :" + _tempFolderPath);
+            bool processing = await _videoProcessing.GenerateImageAsync(VideoSource.LocalPath, _tempFolderPath, FrameInterval, _ffmpegRepository._ffmpegPath);
+            if (processing)
             {
+                var loadImage = _videoProcessing.LoadImageFolder(_tempFolderPath);
                 MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                ProcessFrame = true; 
+                StageImage = new ObservableCollection<FrameImage>(loadImage); 
+                SelectedImage = StageImage.FirstOrDefault();
+                ProcessFrame = true;
+
             }
             else
             {
-
                 MessageBox.Show("Generate Frame Image Failed!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -169,6 +194,7 @@ namespace Video_Registers.ViewModel
             IsLoaded = false;
             IsMuted = false;
             IsPlaying = false;
+            ProcessFrame = false;
         }
 
         private void OnMute(object obj)

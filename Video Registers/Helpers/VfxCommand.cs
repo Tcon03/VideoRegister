@@ -28,7 +28,6 @@ namespace Video_Registers.Commands
         }
 
 
-
         public void RaiseCanExecuteChanged()
         {
             if (this != null)
@@ -53,41 +52,7 @@ namespace Video_Registers.Commands
             _TargetExecuteMethod(parameter);
         }
 
-        //{
-        //    private readonly Action<object> _executeAction;
-        //    private readonly Func<object, bool> _canExecuteAction;
-        //    //Constructors
-        //    public VfxCommand(Action<object> executeAction)
-        //    {
-        //        _executeAction = executeAction;
-        //        _canExecuteAction = null;
-        //    }
-
-
-        //    public VfxCommand(Action<object> executeAction, Func<object, bool> canExecuteAction = null) // khởi tạo đối tượng với điều kiện có thể thực thi lệnh 
-        //    {
-        //        _executeAction = executeAction;
-        //        _canExecuteAction = canExecuteAction;
-        //    }
-
-
-        //    //Events
-        //    public event EventHandler CanExecuteChanged
-        //    {
-        //        add { CommandManager.RequerySuggested += value; }
-        //        remove { CommandManager.RequerySuggested -= value; }
-        //    }
-        //    //Methods     gọi để xem lệnh có thể chạy không
-        //    public bool CanExecute(object parameter) // Check if the command can be executed đoạn code này sẽ kiểm tra xem lệnh có thể thực thi hay không
-        //    {
-        //        return _canExecuteAction == null || _canExecuteAction(parameter);
-        //    }
-
-        //    //gọi khi người dùng click vào lệnh 
-        //    public void Execute(object parameter) // Đoạn code này sẽ thực thi lệnh
-        //    {
-        //        _executeAction(parameter);
-        //    }
+    
 
     }
 }
