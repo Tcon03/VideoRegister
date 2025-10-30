@@ -49,8 +49,9 @@
                     </StackPanel>
                 </Button>
                 <Button 
-                    Margin="10 0 0 0"
+                        Margin="10 0 0 0"
                         Command="{Binding ClearCommand}"
+                        IsEnabled="{Binding IsLoaded}"
                         CommandParameter="{ Binding ElementName=_this}"
                         Style="{StaticResource btnclear }">
                     <StackPanel Orientation="Horizontal">
@@ -195,6 +196,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
                              Kind="ImageArea" 
+                            IsEnabled="{Binding IsLoaded,Mode=OneWay}"
                               Foreground="White"
                               Margin="0 0 10 0"
                              VerticalAlignment="Center"
@@ -242,6 +244,11 @@
                     <Grid  
                          Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}"
                           Margin="10">
+                        <Image 
+                           Name="disPlayImage" 
+                           Stretch="Uniform" 
+                           Source="{Binding SelectedImage.ImageSource }"
+                           HorizontalAlignment="Center"/>
                         <Button HorizontalAlignment="Left" 
                                 Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 

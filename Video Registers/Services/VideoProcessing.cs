@@ -1,17 +1,60 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using Video_Registers.Model;
 
 namespace Video_Registers.Services
 {
     public class VideoProcessing
     {
+
+        public ObservableCollection<FrameImage> LoadImageFolder(string folderImageData)
+        {
+            try
+            {
+                var imageList = new ObservableCollection<FrameImage>();
+                if (!Directory.Exists(folderImageData))
+                {
+                    Log.Error("Không tìm thấy dữ liệu ở folder ");
+                    return imageList;
+                }
+                string[] imageFiles = Directory.GetFiles(folderImageData, "*.png");
+
+                Log.Information(" Image Files " + imageFiles.ToString());
+                foreach (var images in imageFiles)
+                {
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.UriSource = new Uri(images, UriKind.Absolute);
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad; // Tải ngay
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze(); // Cho phép UI truy cập
+                                          // thêm các dữ liệu vào List 
+                    imageList.Add(new FrameImage
+                    {
+                        ImageSource = bitmapImage,
+                        FilePathImage = images // Lưu lại đường dẫn tạm
+                    });
+                }
+                return imageList;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("gặp vấn đề lỗi ở Hàm LoadImageFolder!!" + ex);
+                return default;
+            }
+        }
+
+
         public async Task<bool> GenerateImageAsync(string videoPath, string folderOutput, double frameInterval, string ffmpegPath)
         {
             if (!File.Exists(ffmpegPath))
@@ -29,13 +72,21 @@ namespace Video_Registers.Services
                 }
                 var ffmpegCmd = $"-i \"{videoPath}\" -vf fps={1.0 / frameInterval} \"{folderOutput}/image_%01d.png\"";
                 Log.Information("Running FFmpeg command: {FfmpegCmd}", ffmpegCmd);
-
-                await RunFFmpegCommand(ffmpegPath, ffmpegCmd);
-                return true;
+                bool checkRun = await RunFFmpegCommand(ffmpegPath, ffmpegCmd);
+                if (checkRun)
+                {
+                    Log.Information("==== Image generation completed successfully. ====");
+                    return true;
+                }
+                else
+                {
+                    Log.Error("==== Image generation failed during FFmpeg execution.=====");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                Log.Error("Error generating images from video: {ErrorMessage}", ex.Message);
+                Log.Error("=== Error generating images from video: {ErrorMessage} ==== ", ex.Message);
                 return false;
             }
 
@@ -45,7 +96,7 @@ namespace Video_Registers.Services
         /// Runffmpeg command
         /// </summary>
         /// <returns></returns>
-        public async Task RunFFmpegCommand(string ffmpegPath, string commadFfmpeg)
+        public async Task<bool> RunFFmpegCommand(string ffmpegPath, string commadFfmpeg)
         {
             try
             {
@@ -65,40 +116,35 @@ namespace Video_Registers.Services
                     process.StartInfo = processStartInfo;
                     process.Start();
 
-                    // SỬA LỖI DEADLOCK: Bắt đầu đọc stream ngay
+                    // đọc steam đầu ra và lỗi không đồng bộ
                     Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
-                    Log.Information("FFmpeg process output " + outputTask);
+                    Log.Information("==== FFmpeg process output ====== : \n" + outputTask);
 
                     Task<string> errorTask = process.StandardError.ReadToEndAsync();
-                    Log.Information("FFmpeg process error " + errorTask);
+                    Log.Information("==== FFmpeg process error ======= : \n" + errorTask);
 
                     // Chờ cả 3 tác vụ song song hoàn thành
                     await Task.WhenAll(process.WaitForExitAsync(), outputTask, errorTask);
 
-                    // Lấy kết quả sau khi đã await
-                    string outPutResult = await outputTask;
                     string errorResult = await errorTask;
 
-                    // SỬA LỖI LOGIC: Kiểm tra lỗi trong 'errorResult'
                     if (process.ExitCode == 0)
                     {
-                        // Thành công: 'errorResult' chứa thông tin tiến trình
-                        if (!string.IsNullOrEmpty(errorResult))
-                        {
-                            Log.Information("========== Export Success (Info) ==========\n {ProgressInfo}", errorResult);
-                        }
+                        Log.Information("========== Export Success (Info) ==========\n {ProgressInfo}", errorResult);
                     }
                     else
                     {
-                        // Thất bại: 'errorResult' chứa thông báo lỗi
-                        Log.Error("===== Export Video Errorr (ExitCode {Code}) =====\n {Error}", process.ExitCode, errorResult);
+                        MessageBox.Show("FFmpeg Error: " + errorResult, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
                     }
+                    return true;
 
                 }
             }
             catch (Exception ex)
             {
-                Log.Error("Lỗi khi chạy FFmpeg: {ErrorMessage}", ex.Message);
+                MessageBox.Show("FFmpeg Error: " + ex, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
         }
 

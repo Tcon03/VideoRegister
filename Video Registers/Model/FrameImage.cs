@@ -10,6 +10,6 @@ namespace Video_Registers.Model
     public class FrameImage
     {
         public string FilePathImage { get; set; }
-        public BitmapImage ImageData { get; set; }
+        public BitmapImage ImageSource { get; set; }
     }
 }

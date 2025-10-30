@@ -208,8 +208,6 @@
                 <Border Background="LightGray"
                         CornerRadius="20"
                         Margin="10 0">
-
-
                     <Grid>
                         <Image 
                               Name="disPlayImage" 
