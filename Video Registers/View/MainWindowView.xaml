@@ -190,7 +190,7 @@
             <StackPanel Orientation="Horizontal"
                         Margin="10 10 0 0">
                 <Button 
-                     Command="{Binding GenerateFramesCommands}"
+                     Command="{Binding GenerateFramesCommand}"
                      CommandParameter="{Binding ElementName=_this}"
                      Style="{StaticResource  btnGenerate}">
                     <StackPanel Orientation="Horizontal">
@@ -241,31 +241,49 @@
                 <Border CornerRadius="20" 
                         Margin="10"
                         Background="LightGray">
-                    <Grid  
-                         Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}"
+                    <Grid Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}"
                           Margin="10">
+
                         <Image 
-                           Name="disPlayImage" 
-                           Stretch="Uniform" 
-                           Source="{Binding SelectedImage.ImageSource }"
-                           HorizontalAlignment="Center"/>
+                            Name="disPlayImage" 
+                            Stretch="Uniform" 
+                            Source="{Binding SelectedImage.ImageSource }"
+                            HorizontalAlignment="Center">
+                        </Image>
+
                         <Button HorizontalAlignment="Left" 
+                                Command="{Binding PreviousImageCommand}"
                                 Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 
-                                 Style="{StaticResource icon}"
-                                 MinHeight="35"
-                                 MinWidth="30"
-                                 Kind="ArrowLeft" />
+                                    Style="{StaticResource icon}"
+                                    MinHeight="35"
+                                    MinWidth="30"
+                                    Kind="ArrowLeft"/>
                         </Button>
 
-                        <Button HorizontalAlignment="Right" 
-                               Style="{StaticResource btnNextPre}">
+                        <Button HorizontalAlignment="Right"
+                                Command="{Binding NextImageCommand}" 
+                                Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 
                                     MinHeight="35"
                                     MinWidth="30"
                                     Style="{StaticResource icon}"
-                                    Kind="ArrowRight" />
+                                    Kind="ArrowRight"/>
                         </Button>
+
+                        <Border CornerRadius="8"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom" 
+                                MinHeight="40 " 
+                                Width="60"
+                                Background="White">
+                            <TextBlock Foreground="Black" 
+                                           FontSize="20"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           FontWeight="DemiBold"
+                                           Text="{Binding DisplayIndexString}" />
+                        </Border>
                     </Grid>
                 </Border>
             </Grid>
