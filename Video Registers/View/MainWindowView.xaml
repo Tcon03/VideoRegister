@@ -35,8 +35,9 @@
                           Margin="10 10 0 0">
                 <Button 
                     Command="{Binding UploadCommand}"
-                    CommandParameter="{ Binding ElementName=_this}"
-                    Style="{StaticResource btnUpLoad }">
+                    Style="{StaticResource PrimaryButton }"
+                    CommandParameter="{ Binding ElementName=_this}">
+
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
                             Kind="Upload"
@@ -53,11 +54,10 @@
                         Command="{Binding ClearCommand}"
                         IsEnabled="{Binding IsLoaded}"
                         CommandParameter="{ Binding ElementName=_this}"
-                        Style="{StaticResource btnclear }">
-                    <StackPanel Orientation="Horizontal">
+                        Style="{StaticResource btnClear }">
+                    <StackPanel Orientation="Horizontal"  >
                         <Icon:PackIconMaterial 
                             Kind="Delete"
-                            VerticalAlignment="Center"
                             Margin="0 0 10 0"/>
                         <TextBlock Text="Clear " 
                                FontSize="16"
@@ -192,15 +192,15 @@
                 <Button 
                      Command="{Binding GenerateFramesCommand}"
                      CommandParameter="{Binding ElementName=_this}"
-                     Style="{StaticResource  btnGenerate}">
+                     Style="{StaticResource PrimaryButton}">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
                              Kind="ImageArea" 
                             IsEnabled="{Binding IsLoaded,Mode=OneWay}"
                               Foreground="White"
                               Margin="0 0 10 0"
-                             VerticalAlignment="Center"
-                              />
+                             VerticalAlignment="Center"/>
+
 
                         <TextBlock
                               FontSize="16"
@@ -238,12 +238,11 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <Border CornerRadius="20" 
+                <Border CornerRadius="20"
                         Margin="10"
                         Background="LightGray">
-                    <Grid Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}"
-                          Margin="10">
-
+                    <!--<Grid Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}">-->
+                    <Grid>
                         <Image 
                             Name="disPlayImage" 
                             Stretch="Uniform" 
@@ -251,7 +250,19 @@
                             HorizontalAlignment="Center">
                         </Image>
 
+                        <Button HorizontalAlignment="Right"
+                                Margin="15"
+                                Command="{Binding DeleteSelectedCommand}"
+                                Style="{StaticResource btnIcon}"
+                                VerticalAlignment="Top">
+                            <Icon:PackIconMaterial 
+                                   Foreground="#EF4444"
+                                     Height="15"
+                                    Width="20"
+                                    Kind="Close"/>
+                        </Button>
                         <Button HorizontalAlignment="Left" 
+                                Margin="10"
                                 Command="{Binding PreviousImageCommand}"
                                 Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 
@@ -262,6 +273,7 @@
                         </Button>
 
                         <Button HorizontalAlignment="Right"
+                                Margin="10"
                                 Command="{Binding NextImageCommand}" 
                                 Style="{StaticResource btnNextPre}">
                             <Icon:PackIconMaterial 
@@ -272,6 +284,7 @@
                         </Button>
 
                         <Border CornerRadius="8"
+                                Margin="10"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Bottom" 
                                 MinHeight="40 " 
@@ -286,6 +299,44 @@
                         </Border>
                     </Grid>
                 </Border>
+
+                <Grid Grid.Row="1" Height="100">
+                    <Button HorizontalAlignment="Left"
+                               Margin="10 20 10 10"
+                               Style="{StaticResource btnSave}">
+                        <StackPanel Orientation="Horizontal" >
+                            <Icon:PackIconMaterial Kind="Check" 
+                                                   Height="20" 
+                                                   Width="15"/>
+
+                            <TextBlock Text="Accept"
+                                        Margin=" 5 0"
+                                       VerticalAlignment="Center"/>
+
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource btnClear}"
+                            HorizontalAlignment="Right" 
+                            
+                              Margin="10 20 10 10">
+                        <StackPanel Orientation="Horizontal"
+                                    Height="40" 
+                                    VerticalAlignment="Center" >
+                            <Icon:PackIconMaterial
+                                   Kind="Close" 
+                                VerticalAlignment="Center"
+                                    Height="10" 
+                                    Width="15"/>
+                            <TextBlock Text="Reject"
+                                     Margin=" 5 0 0 0"
+                                    VerticalAlignment="Center"/>
+
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
             </Grid>
 
         </Grid>

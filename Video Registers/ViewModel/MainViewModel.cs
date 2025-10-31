@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -95,14 +96,14 @@ namespace Video_Registers.ViewModel
             }
         }
         private bool _frameProcess;
-        public bool ProcessFrame
+        public bool IsFrameProcessing
         {
             get => _frameProcess;
             set
             {
                 _frameProcess = value;
                 Log.Information($"FrameImage changed to: {_frameProcess}");
-                RaisePropertyChanged(nameof(ProcessFrame));
+                RaisePropertyChanged(nameof(IsFrameProcessing));
 
 
             }
@@ -167,6 +168,7 @@ namespace Video_Registers.ViewModel
             set
             {
                 _totalImage = value;
+                Log.Information("Total Image change" + _totalImage);
                 RaisePropertyChanged(nameof(TotalImage));
                 RaisePropertyChanged(nameof(DisplayIndexString));
             }
@@ -178,9 +180,12 @@ namespace Video_Registers.ViewModel
         public ICommand MuteCommand { get; set; }
         public ICommand ClearCommand { get; set; }
         public ICommand GenerateFramesCommand { get; set; }
-        public ICommand DownloadFFmpegCommand { get; set; }
         public ICommand NextImageCommand { get; set; }
         public ICommand PreviousImageCommand { get; set; }
+
+        public ICommand DeleteSelectedCommand { get; set; }
+        public ICommand SaveCommand { get; set; }
+        public ICommand CancelCommand { get; set; }
 
 
         public MainViewModel()
@@ -193,7 +198,35 @@ namespace Video_Registers.ViewModel
             NextImageCommand = new VfxCommand(OnNext, CanNext);
             PreviousImageCommand = new VfxCommand(OnPrevious, CanPrevious);
             _videoProcessing = new VideoProcessing();
-            OnDownloadFFmpeg();
+            //SaveCommand = new VfxCommand(OnSave, CanActOnFrames);
+            CancelCommand = new VfxCommand(OnCancel, CanCancel);
+        }
+
+        private bool CanCancel()
+        {
+            if (StageImage != null && StageImage.Count > 0)
+                return true;
+            return false;
+        }
+
+        private async void OnCancel(object obj)
+        {
+            IsFrameProcessing = false; // 1. Ẩn khu vực ảnh
+            StageImage.Clear();        // 2. Xóa ảnh khỏi UI
+            TotalImage = 0;
+            SelectedImage = null;
+
+            // 3. Xóa thư mục tạm (giỏ hàng)
+            if (!string.IsNullOrEmpty(_tempFolderPath))
+            {
+                await _videoProcessing.DeleteFolderPath(_tempFolderPath);
+                _tempFolderPath = null;
+            }
+        } 
+
+        private async Task CancelFuc()
+        {
+
         }
 
         private bool CanPrevious()
@@ -220,25 +253,17 @@ namespace Video_Registers.ViewModel
             SelectedImage = StageImage[CurrentFrameIndex + 1];
         }
 
-        public async void OnDownloadFFmpeg()
-        {
-            if (_ffmpegRepository.IsInstalled)
-            {
-                Log.Information("FFmpeg is already installed. No need to download.");
-                return;
-            }
-            try
-            {
-                await _ffmpegRepository.DownloadFfmpegAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error downloading FFmpeg: " + ex.Message);
-            }
-        }
-
+        /// <summary>
+        ///  Generate Frame Image from video
+        /// </summary>
         private async void OnGenerate(object obj)
         {
+            bool ffmpegReady = await EnsureFfmpegIsReadyAsync();
+            if (!ffmpegReady)
+            {
+                MessageBox.Show("Không thể tải FFmpeg. Vui lòng kiểm tra internet.", "Lỗi nghiêm trọng", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             var result = MessageBox.Show("Bạn có chắc chắn muốn tạo Frame Image từ video không?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes)
@@ -254,11 +279,11 @@ namespace Video_Registers.ViewModel
 
                 // get image từ thư mục tạm
                 var loadImage = _videoProcessing.LoadImageFolder(_tempFolderPath);
-                MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);\
+                MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 StageImage = new ObservableCollection<FrameImage>(loadImage);
-                SelectedImage = StageImage.FirstOrDefault();
-                ProcessFrame = true;
                 TotalImage = StageImage.Count;
+                SelectedImage = StageImage.FirstOrDefault();
+                IsFrameProcessing = true;
 
             }
             else
@@ -266,21 +291,62 @@ namespace Video_Registers.ViewModel
                 MessageBox.Show("Generate Frame Image Failed!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        /// <summary>
+        /// Check download FFmpeg 
+        /// </summary>
+        private async Task<bool> EnsureFfmpegIsReadyAsync()
+        {
+            if (_ffmpegRepository.IsInstalled)
+            {
+                Log.Information("FFmpeg đã sẵn sàng.");
+                return true;
+            }
 
+            // Nếu chưa, bắt đầu tải
+            try
+            {
+                Log.Information("FFmpeg chưa được cài đặt, bắt đầu tải...");
+                await _ffmpegRepository.DownloadFfmpegAsync();
+
+                if (_ffmpegRepository.IsInstalled)
+                {
+                    Log.Information("Tải FFmpeg thành công.");
+                    return true;
+                }
+                Log.Error("Tải FFmpeg thất bại (sau khi chạy DownloadAsync).");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Lỗi khi tải FFmpeg");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// clear video source
+        /// </summary>
+        /// <param name="obj"></param>
         private void OnClear(object obj)
         {
             VideoSource = null;
             IsLoaded = false;
             IsMuted = false;
             IsPlaying = false;
-            ProcessFrame = false;
+            IsFrameProcessing = false;
         }
 
+        /// <summary>
+        /// trigger Mute command
+        /// </summary>
         private void OnMute(object obj)
         {
             IsMuted = !IsMuted;
         }
 
+        /// <summary>
+        ///  transfer CanExecuteChanged to Command
+        /// </summary>
         private void RasieCanExecuteChanged()
         {
             (PlayPauseCommand as VfxCommand)?.RaiseCanExecuteChanged();
