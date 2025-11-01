@@ -16,6 +16,24 @@ namespace Video_Registers.Services
 {
     public class VideoProcessing
     {
+        public async Task<bool> DeleteFolderPath(string tempFolder)
+        {
+            if (Directory.Exists(tempFolder))
+            {
+                {
+                    Directory.Delete(tempFolder, true);
+                    Log.Information("Đã xóa thành công thư mục tạm: {TempFolder}", tempFolder);
+                    return true;
+                }
+
+            }
+            else
+            {
+                Log.Warning("Thư mục tạm không tồn tại: {TempFolder}", tempFolder);
+                return false;
+
+            }
+        }
 
         public ObservableCollection<FrameImage> LoadImageFolder(string folderImageData)
         {
@@ -29,7 +47,6 @@ namespace Video_Registers.Services
                 }
                 string[] imageFiles = Directory.GetFiles(folderImageData, "*.png");
 
-                Log.Information(" Image Files " + imageFiles.ToString());
                 foreach (var images in imageFiles)
                 {
                     BitmapImage bitmapImage = new BitmapImage();
