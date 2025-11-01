@@ -222,7 +222,7 @@ namespace Video_Registers.ViewModel
                 await _videoProcessing.DeleteFolderPath(_tempFolderPath);
                 _tempFolderPath = null;
             }
-        } 
+        }
 
         private async Task CancelFuc()
         {
@@ -298,7 +298,7 @@ namespace Video_Registers.ViewModel
         {
             if (_ffmpegRepository.IsInstalled)
             {
-                Log.Information("FFmpeg đã sẵn sàng.");
+                Log.Information("FFmpeg đã có sẵn trong thư mục.");
                 return true;
             }
 
