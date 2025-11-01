@@ -16,6 +16,28 @@ namespace Video_Registers.Services
 {
     public class VideoProcessing
     {
+        public async Task<bool> SaveStageFrame(ObservableCollection<FrameImage> imageSave, string folderImageTemp)
+        {
+            try
+            {
+                foreach (var image in imageSave)
+                {
+                    // lấy tên file gốc 
+                    string newFileName = Path.GetFileName(image.FilePathImage);
+                    string destinationPath = Path.Combine(folderImageTemp,newFileName);
+                    File.Copy(image.FilePathImage, destinationPath, true);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Errorr Save Image");
+                return false;
+            }
+         
+
+        }
+
         public async Task<bool> DeleteFolderPath(string tempFolder)
         {
             if (Directory.Exists(tempFolder))
@@ -89,6 +111,7 @@ namespace Video_Registers.Services
                 }
                 var ffmpegCmd = $"-i \"{videoPath}\" -vf fps={1.0 / frameInterval} \"{folderOutput}/image_%01d.png\"";
                 Log.Information("Running FFmpeg command: {FfmpegCmd}", ffmpegCmd);
+
                 bool checkRun = await RunFFmpegCommand(ffmpegPath, ffmpegCmd);
                 if (checkRun)
                 {

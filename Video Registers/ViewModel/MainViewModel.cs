@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ using Video_Registers.Commands;
 using Video_Registers.Model;
 using Video_Registers.Repositories;
 using Video_Registers.Services;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Video_Registers.ViewModel
 {
@@ -119,7 +121,9 @@ namespace Video_Registers.ViewModel
             set
             {
                 _stageImage = value;
+                Log.Information("Stage Image Change :" + _stageImage);
                 RaisePropertyChanged(nameof(StageImage));
+                (RejectImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
             }
         }
 
@@ -145,6 +149,7 @@ namespace Video_Registers.ViewModel
                 return $"{CurrentFrameIndex + 1}/{TotalImage}";
             }
         }
+
         private int _currentFrameIndex = -1;
         public int CurrentFrameIndex
         {
@@ -184,8 +189,8 @@ namespace Video_Registers.ViewModel
         public ICommand PreviousImageCommand { get; set; }
 
         public ICommand DeleteSelectedCommand { get; set; }
-        public ICommand SaveCommand { get; set; }
-        public ICommand CancelCommand { get; set; }
+        public ICommand AcceptCommands { get; set; }
+        public ICommand RejectImageCommand { get; set; }
 
 
         public MainViewModel()
@@ -198,35 +203,57 @@ namespace Video_Registers.ViewModel
             NextImageCommand = new VfxCommand(OnNext, CanNext);
             PreviousImageCommand = new VfxCommand(OnPrevious, CanPrevious);
             _videoProcessing = new VideoProcessing();
-            //SaveCommand = new VfxCommand(OnSave, CanActOnFrames);
-            CancelCommand = new VfxCommand(OnCancel, CanCancel);
+            RejectImageCommand = new VfxCommand(OnReject, CanReject);
+            AcceptCommands = new VfxCommand(OnSave, () => true);
+
         }
 
-        private bool CanCancel()
+        private bool CanActOnFrames()
+        {
+            throw new NotImplementedException();
+        }
+
+        private async void OnSave(object obj)
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true, // <-- Dòng này biến nó thành Folder Picker
+                Title = "Chọn thư mục để lưu ảnh"
+            };
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                // 3. LẤY ĐƯỜNG DẪN THƯ MỤC
+                string selectedFolder = dialog.FileName;
+                bool checkProcess = await _videoProcessing.SaveStageFrame(StageImage, selectedFolder);
+                if (checkProcess)
+                {
+                    MessageBox.Show($"Đã lưu {StageImage.Count} ảnh!");
+                    OnReject(null);
+                }
+            }
+        }
+
+        private bool CanReject()
         {
             if (StageImage != null && StageImage.Count > 0)
                 return true;
             return false;
         }
 
-        private async void OnCancel(object obj)
+        private async void OnReject(object obj)
         {
-            IsFrameProcessing = false; // 1. Ẩn khu vực ảnh
-            StageImage.Clear();        // 2. Xóa ảnh khỏi UI
+
+            IsFrameProcessing = false;
+            StageImage.Clear();
             TotalImage = 0;
             SelectedImage = null;
 
-            // 3. Xóa thư mục tạm (giỏ hàng)
+            // delete Folder Temp
             if (!string.IsNullOrEmpty(_tempFolderPath))
             {
                 await _videoProcessing.DeleteFolderPath(_tempFolderPath);
                 _tempFolderPath = null;
             }
-        }
-
-        private async Task CancelFuc()
-        {
-
         }
 
         private bool CanPrevious()
@@ -302,7 +329,6 @@ namespace Video_Registers.ViewModel
                 return true;
             }
 
-            // Nếu chưa, bắt đầu tải
             try
             {
                 Log.Information("FFmpeg chưa được cài đặt, bắt đầu tải...");
