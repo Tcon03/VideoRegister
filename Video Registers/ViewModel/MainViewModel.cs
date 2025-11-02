@@ -124,6 +124,7 @@ namespace Video_Registers.ViewModel
                 Log.Information("Stage Image Change :" + _stageImage);
                 RaisePropertyChanged(nameof(StageImage));
                 (RejectImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
+                (AcceptCommands as VfxCommand)?.RaiseCanExecuteChanged();
             }
         }
 
@@ -136,7 +137,7 @@ namespace Video_Registers.ViewModel
                 _selectedImage = value;
                 RaisePropertyChanged(nameof(SelectedImage));
                 CurrentFrameIndex = StageImage.IndexOf(SelectedImage);
-
+                (DeleteSelectedCommand as VfxCommand)?.RaiseCanExecuteChanged();
             }
         }
         FfmpegRepository _ffmpegRepository = new FfmpegRepository();
@@ -177,7 +178,6 @@ namespace Video_Registers.ViewModel
                 RaisePropertyChanged(nameof(TotalImage));
                 RaisePropertyChanged(nameof(DisplayIndexString));
             }
-
         }
 
         public ICommand UploadCommand { get; set; }
@@ -204,15 +204,57 @@ namespace Video_Registers.ViewModel
             PreviousImageCommand = new VfxCommand(OnPrevious, CanPrevious);
             _videoProcessing = new VideoProcessing();
             RejectImageCommand = new VfxCommand(OnReject, CanReject);
-            AcceptCommands = new VfxCommand(OnSave, () => true);
-
+            AcceptCommands = new VfxCommand(OnSave, CanSave);
+            DeleteSelectedCommand = new VfxCommand(OnDeleteSelected, CanDeleteSelected);
         }
 
-        private bool CanActOnFrames()
+        private bool CanDeleteSelected()
         {
-            throw new NotImplementedException();
+            if (SelectedImage != null && StageImage.Count > 0)
+                return true;
+            return false;
         }
 
+        private async void OnDeleteSelected(object obj)
+        {
+            if (SelectedImage != null)
+            {
+
+                var removedIndex = SelectedImage;
+                int index = StageImage.IndexOf(removedIndex);
+                StageImage.Remove(removedIndex);
+
+                TotalImage = StageImage.Count;
+
+                File.Delete(removedIndex.FilePathImage);
+                if (StageImage.Count > 0)
+                {
+                    SelectedImage = StageImage.ElementAtOrDefault(index);
+                }
+                else
+                {
+                    SelectedImage = null;
+                    IsFrameProcessing = false;
+                    await _videoProcessing.DeleteFolderPath(_tempFolderPath);
+                    _tempFolderPath = null;
+
+                }
+                (RejectImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
+                (AcceptCommands as VfxCommand)?.RaiseCanExecuteChanged();
+
+            }
+        }
+
+        private bool CanSave()
+        {
+            if (StageImage != null && StageImage.Count > 0)
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Save Stage Frame Image to folder user choose
+        /// </summary>
         private async void OnSave(object obj)
         {
             var dialog = new CommonOpenFileDialog
@@ -228,11 +270,19 @@ namespace Video_Registers.ViewModel
                 if (checkProcess)
                 {
                     MessageBox.Show($"Đã lưu {StageImage.Count} ảnh!");
-                    OnReject(null);
+                    var result = MessageBox.Show("Bạn có muốn xóa ảnh tạm không?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question); 
+                    if (result == MessageBoxResult.Yes)
+                    {
+                            await _videoProcessing.DeleteFolderPath(_tempFolderPath);
+                            _tempFolderPath = null;
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// can Delete Stage
+        /// </summary>
         private bool CanReject()
         {
             if (StageImage != null && StageImage.Count > 0)
@@ -240,6 +290,9 @@ namespace Video_Registers.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Reject Frame Image all and clear temp folder
+        /// </summary>
         private async void OnReject(object obj)
         {
 
@@ -254,8 +307,11 @@ namespace Video_Registers.ViewModel
                 await _videoProcessing.DeleteFolderPath(_tempFolderPath);
                 _tempFolderPath = null;
             }
+            (RejectImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
+            (AcceptCommands as VfxCommand)?.RaiseCanExecuteChanged();
         }
 
+        #region
         private bool CanPrevious()
         {
             if (CurrentFrameIndex > 0)
@@ -279,6 +335,7 @@ namespace Video_Registers.ViewModel
         {
             SelectedImage = StageImage[CurrentFrameIndex + 1];
         }
+        #endregion
 
         /// <summary>
         ///  Generate Frame Image from video

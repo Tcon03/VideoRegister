@@ -16,15 +16,18 @@ namespace Video_Registers.Services
 {
     public class VideoProcessing
     {
-        public async Task<bool> SaveStageFrame(ObservableCollection<FrameImage> imageSave, string folderImageTemp)
+        public async Task<bool> SaveStageFrame(ObservableCollection<FrameImage> imageSave, string folderSave)
         {
             try
             {
                 foreach (var image in imageSave)
                 {
                     // lấy tên file gốc 
-                    string newFileName = Path.GetFileName(image.FilePathImage);
-                    string destinationPath = Path.Combine(folderImageTemp,newFileName);
+                    string newFileName = Path.GetFileName(image.FilePathImage); 
+                    Log.Information("--- Saving image: {FileName} ---", newFileName); 
+
+                    string destinationPath = Path.Combine(folderSave,newFileName);
+                    Log.Information("--- DestinationPath -- " + destinationPath);
                     File.Copy(image.FilePathImage, destinationPath, true);
                 }
                 return true;
@@ -96,11 +99,7 @@ namespace Video_Registers.Services
 
         public async Task<bool> GenerateImageAsync(string videoPath, string folderOutput, double frameInterval, string ffmpegPath)
         {
-            if (!File.Exists(ffmpegPath))
-            {
-                Log.Information("Không tìm thấy file ffmpeg để chạy chương trình");
-                return false;
-            }
+
             try
             {
 
