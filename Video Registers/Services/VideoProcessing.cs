@@ -41,6 +41,12 @@ namespace Video_Registers.Services
 
         }
 
+
+        /// <summary>
+        /// Delete temp folder
+        /// </summary>
+        /// <param name="tempFolder"></param>
+        /// <returns></returns>
         public async Task<bool> DeleteFolderPath(string tempFolder)
         {
             if (Directory.Exists(tempFolder))
@@ -60,6 +66,11 @@ namespace Video_Registers.Services
             }
         }
 
+        /// <summary>
+        /// Load image from folder
+        /// </summary>
+        /// <param name="folderImageData"></param>
+        /// <returns></returns>
         public ObservableCollection<FrameImage> LoadImageFolder(string folderImageData)
         {
             try
@@ -97,6 +108,14 @@ namespace Video_Registers.Services
         }
 
 
+        /// <summary>
+        /// Generate image from video
+        /// </summary>
+        /// <param name="videoPath"> Path video</param>
+        /// <param name="folderOutput">Path Folder </param>
+        /// <param name="frameInterval"> Thông số s/1 ảnh</param>
+        /// <param name="ffmpegPath"> đường dẫn ffmpeg</param>
+        /// <returns></returns>
         public async Task<bool> GenerateImageAsync(string videoPath, string folderOutput, double frameInterval, string ffmpegPath)
         {
 
