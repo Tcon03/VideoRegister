@@ -16,6 +16,37 @@ namespace Video_Registers.Services
 {
     public class VideoProcessing
     {
+        public async Task<bool> SaveStageFrame(ObservableCollection<FrameImage> imageSave, string folderSave)
+        {
+            try
+            {
+                foreach (var image in imageSave)
+                {
+                    // lấy tên file gốc 
+                    string newFileName = Path.GetFileName(image.FilePathImage); 
+                    Log.Information("--- Saving image: {FileName} ---", newFileName); 
+
+                    string destinationPath = Path.Combine(folderSave,newFileName);
+                    Log.Information("--- DestinationPath -- " + destinationPath);
+                    File.Copy(image.FilePathImage, destinationPath, true);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Errorr Save Image");
+                return false;
+            }
+         
+
+        }
+
+
+        /// <summary>
+        /// Delete temp folder
+        /// </summary>
+        /// <param name="tempFolder"></param>
+        /// <returns></returns>
         public async Task<bool> DeleteFolderPath(string tempFolder)
         {
             if (Directory.Exists(tempFolder))
@@ -35,6 +66,11 @@ namespace Video_Registers.Services
             }
         }
 
+        /// <summary>
+        /// Load image from folder
+        /// </summary>
+        /// <param name="folderImageData"></param>
+        /// <returns></returns>
         public ObservableCollection<FrameImage> LoadImageFolder(string folderImageData)
         {
             try
@@ -72,13 +108,17 @@ namespace Video_Registers.Services
         }
 
 
+        /// <summary>
+        /// Generate image from video
+        /// </summary>
+        /// <param name="videoPath"> Path video</param>
+        /// <param name="folderOutput">Path Folder </param>
+        /// <param name="frameInterval"> Thông số s/1 ảnh</param>
+        /// <param name="ffmpegPath"> đường dẫn ffmpeg</param>
+        /// <returns></returns>
         public async Task<bool> GenerateImageAsync(string videoPath, string folderOutput, double frameInterval, string ffmpegPath)
         {
-            if (!File.Exists(ffmpegPath))
-            {
-                Log.Information("Không tìm thấy file ffmpeg để chạy chương trình");
-                return false;
-            }
+
             try
             {
 
@@ -89,6 +129,7 @@ namespace Video_Registers.Services
                 }
                 var ffmpegCmd = $"-i \"{videoPath}\" -vf fps={1.0 / frameInterval} \"{folderOutput}/image_%01d.png\"";
                 Log.Information("Running FFmpeg command: {FfmpegCmd}", ffmpegCmd);
+
                 bool checkRun = await RunFFmpegCommand(ffmpegPath, ffmpegCmd);
                 if (checkRun)
                 {

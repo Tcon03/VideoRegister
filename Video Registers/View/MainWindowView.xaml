@@ -241,8 +241,8 @@
                 <Border CornerRadius="20"
                         Margin="10"
                         Background="LightGray">
-                    <!--<Grid Visibility="{Binding ProcessFrame , Converter={StaticResource BoolToVisConverterLoaded}}">-->
-                    <Grid>
+                    <Grid Visibility="{Binding IsFrameProcessing , Converter={StaticResource BoolToVisConverterLoaded}}">
+                    <!--<Grid>-->
                         <Image 
                             Name="disPlayImage" 
                             Stretch="Uniform" 
@@ -302,7 +302,8 @@
 
                 <Grid Grid.Row="1" Height="100">
                     <Button HorizontalAlignment="Left"
-                               Margin="10 20 10 10"
+                            Margin="10 20 10 10"
+                            Command="{Binding AcceptCommands}"
                                Style="{StaticResource btnSave}">
                         <StackPanel Orientation="Horizontal" >
                             <Icon:PackIconMaterial Kind="Check" 
@@ -318,7 +319,7 @@
 
                     <Button Style="{StaticResource btnClear}"
                             HorizontalAlignment="Right" 
-                            
+                            Command="{Binding RejectImageCommand}"
                               Margin="10 20 10 10">
                         <StackPanel Orientation="Horizontal"
                                     Height="40" 
