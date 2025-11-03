@@ -1,5 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using AutoUpdaterDotNET;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MS.WindowsAPICodePack.Internal;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -140,7 +142,7 @@ namespace Video_Registers.ViewModel
                 (DeleteSelectedCommand as VfxCommand)?.RaiseCanExecuteChanged();
             }
         }
-        FfmpegRepository _ffmpegRepository = new FfmpegRepository();
+        private readonly FfmpegRepository _ffmpegRepository;
         private readonly VideoProcessing _videoProcessing;
 
         public string DisplayIndexString
@@ -203,9 +205,11 @@ namespace Video_Registers.ViewModel
             NextImageCommand = new VfxCommand(OnNext, CanNext);
             PreviousImageCommand = new VfxCommand(OnPrevious, CanPrevious);
             _videoProcessing = new VideoProcessing();
+            _ffmpegRepository = new FfmpegRepository();
             RejectImageCommand = new VfxCommand(OnReject, CanReject);
             AcceptCommands = new VfxCommand(OnSave, CanSave);
             DeleteSelectedCommand = new VfxCommand(OnDeleteSelected, CanDeleteSelected);
+            CheckForUpdates();
         }
 
         private bool CanDeleteSelected()
@@ -215,6 +219,10 @@ namespace Video_Registers.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Delete Selected Frame Image
+        /// </summary>
+        /// <param name="obj"></param>
         private async void OnDeleteSelected(object obj)
         {
             if (SelectedImage != null)
@@ -259,7 +267,7 @@ namespace Video_Registers.ViewModel
         {
             var dialog = new CommonOpenFileDialog
             {
-                IsFolderPicker = true, // <-- Dòng này biến nó thành Folder Picker
+                IsFolderPicker = true, 
                 Title = "Chọn thư mục để lưu ảnh"
             };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
@@ -270,11 +278,11 @@ namespace Video_Registers.ViewModel
                 if (checkProcess)
                 {
                     MessageBox.Show($"Đã lưu {StageImage.Count} ảnh!");
-                    var result = MessageBox.Show("Bạn có muốn xóa ảnh tạm không?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question); 
+                    var result = MessageBox.Show("Bạn có muốn xóa ảnh tạm không?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
-                            await _videoProcessing.DeleteFolderPath(_tempFolderPath);
-                            _tempFolderPath = null;
+                        await _videoProcessing.DeleteFolderPath(_tempFolderPath);
+                        _tempFolderPath = null;
                     }
                 }
             }
@@ -456,6 +464,76 @@ namespace Video_Registers.ViewModel
                 IsMuted = false;
                 IsPlaying = true;
             }
+        }
+
+        private static void CheckForUpdates()
+        {
+            AutoUpdater.RunUpdateAsAdmin = false;
+            AutoUpdater.ReportErrors = true;
+            AutoUpdater.Synchronous = false;
+            AutoUpdater.ClearAppDirectory = true;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdater_CheckForUpdateEvent;
+            var link = Utils.Constant.SoftWareUpdateUrl;
+            AutoUpdater.Start(link);
+        }
+
+        private static void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            var _dischapter = Application.Current.Dispatcher;
+
+            if (args == null)
+            {
+                _dischapter.Invoke(() =>
+                {
+                    MessageBox.Show("Không thể kiểm tra cập nhật. Kiểm tra lại mạng hoặc URL XML.",
+                              "Cập nhật", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                });
+            }
+            if (args.Error != null)
+            {
+                _dischapter.Invoke(() =>
+                     MessageBox.Show(
+                         $"Không thể kiểm tra cập nhật. Vui lòng kiểm tra lại kết nối mạng hoặc URL.\nLỗi: {args.Error.Message}",
+                         "Lỗi Cập Nhật", MessageBoxButton.OK, MessageBoxImage.Error));
+                return;
+            }
+
+            if (!args.IsUpdateAvailable)
+            {
+                Log.Information("Bạn đang ở phiên bản mới nhất!!");
+                return;
+            }
+            _dischapter.Invoke(() =>
+            {
+                var result = MessageBox.Show(
+                              $"Phát hiện phiên bản mới!\n\n" +
+                              $"Phiên bản hiện tại: v{args.InstalledVersion}\n" +
+                              $"Phiên bản mới: v{args.CurrentVersion}\n\n" +
+                              $"Bạn có muốn cập nhật ngay không?\n",
+                              "Thông báo cập nhật",
+                              MessageBoxButton.YesNo,
+                              MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        if (AutoUpdater.DownloadUpdate(args))
+                        {
+                            Application.Current.Shutdown();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                                        $"Lỗi trong quá trình cập nhật: {ex.Message}",
+                                        "Lỗi",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Error);
+                    }
+                }
+            });
+
         }
     }
 }
