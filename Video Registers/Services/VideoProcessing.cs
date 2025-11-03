@@ -20,24 +20,29 @@ namespace Video_Registers.Services
         {
             try
             {
-                foreach (var image in imageSave)
+                await Task.Run(() =>
                 {
-                    // lấy tên file gốc 
-                    string newFileName = Path.GetFileName(image.FilePathImage); 
-                    Log.Information("--- Saving image: {FileName} ---", newFileName); 
 
-                    string destinationPath = Path.Combine(folderSave,newFileName);
-                    Log.Information("--- DestinationPath -- " + destinationPath);
-                    File.Copy(image.FilePathImage, destinationPath, true);
-                }
+                    foreach (var image in imageSave)
+                    {
+                        // lấy tên file gốc 
+                        string newFileName = Path.GetFileName(image.FilePathImage);
+                        Log.Information("--- Saving image: {FileName} ---", newFileName);
+
+                        string destinationPath = Path.Combine(folderSave, newFileName);
+                        Log.Information("--- DestinationPath -- " + destinationPath);
+                        File.Copy(image.FilePathImage, destinationPath, true);
+                    }
+                });
                 return true;
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Errorr Save Image");
+                Log.Error("Errorr Save Image :" + ex);
                 return false;
             }
-         
+
 
         }
 
@@ -49,15 +54,17 @@ namespace Video_Registers.Services
         /// <returns></returns>
         public async Task<bool> DeleteFolderPath(string tempFolder)
         {
+
             if (Directory.Exists(tempFolder))
             {
                 {
-                    Directory.Delete(tempFolder, true);
+                    await Task.Run(() => Directory.Delete(tempFolder, true));
                     Log.Information("Đã xóa thành công thư mục tạm: {TempFolder}", tempFolder);
                     return true;
                 }
 
             }
+
             else
             {
                 Log.Warning("Thư mục tạm không tồn tại: {TempFolder}", tempFolder);
@@ -103,7 +110,7 @@ namespace Video_Registers.Services
             catch (Exception ex)
             {
                 Log.Error("gặp vấn đề lỗi ở Hàm LoadImageFolder!!" + ex);
-                return default;
+                return new ObservableCollection<FrameImage>();
             }
         }
 
@@ -127,7 +134,7 @@ namespace Video_Registers.Services
                     Log.Information("Creating output folder at: {FolderOutput}", folderOutput);
                     Directory.CreateDirectory(folderOutput);
                 }
-                var ffmpegCmd = $"-i \"{videoPath}\" -vf fps={1.0 / frameInterval} \"{folderOutput}/image_%01d.png\"";
+                var ffmpegCmd = $"-i \"{videoPath}\" -vf fps={1.0 / frameInterval} \"{folderOutput}/image_%04d.png\"";
                 Log.Information("Running FFmpeg command: {FfmpegCmd}", ffmpegCmd);
 
                 bool checkRun = await RunFFmpegCommand(ffmpegPath, ffmpegCmd);
@@ -156,53 +163,41 @@ namespace Video_Registers.Services
         /// <returns></returns>
         public async Task<bool> RunFFmpegCommand(string ffmpegPath, string commadFfmpeg)
         {
-            try
+
+            ProcessStartInfo processStartInfo = new ProcessStartInfo
             {
+                FileName = ffmpegPath,
+                Arguments = commadFfmpeg,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+                UseShellExecute = false,
+            };
 
-                ProcessStartInfo processStartInfo = new ProcessStartInfo
+            using (Process process = new Process())
+            {
+                process.StartInfo = processStartInfo;
+                process.Start();
+
+                // đọc steam đầu ra và lỗi không đồng bộ
+                Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
+                Task<string> errorTask = process.StandardError.ReadToEndAsync();
+
+                // Chờ cả 3 tác vụ song song hoàn thành
+                await Task.WhenAll(process.WaitForExitAsync(), outputTask, errorTask);
+
+                string errorResult = await errorTask;
+
+                if (process.ExitCode == 0)
                 {
-                    FileName = ffmpegPath,
-                    Arguments = commadFfmpeg,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                };
-
-                using (Process process = new Process())
-                {
-                    process.StartInfo = processStartInfo;
-                    process.Start();
-
-                    // đọc steam đầu ra và lỗi không đồng bộ
-                    Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
-                    Log.Information("==== FFmpeg process output ====== : \n" + outputTask);
-
-                    Task<string> errorTask = process.StandardError.ReadToEndAsync();
-                    Log.Information("==== FFmpeg process error ======= : \n" + errorTask);
-
-                    // Chờ cả 3 tác vụ song song hoàn thành
-                    await Task.WhenAll(process.WaitForExitAsync(), outputTask, errorTask);
-
-                    string errorResult = await errorTask;
-
-                    if (process.ExitCode == 0)
-                    {
-                        Log.Information("========== Export Success (Info) ==========\n {ProgressInfo}", errorResult);
-                    }
-                    else
-                    {
-                        MessageBox.Show("FFmpeg Error: " + errorResult, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return false;
-                    }
-                    return true;
-
+                    Log.Information("========== Export Success (Info) ==========\n {ProgressInfo}", errorResult);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("FFmpeg Error: " + ex, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
+                else
+                {
+                    Log.Error("FFmpeg Error: " + errorResult, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+                return true;
             }
         }
 
