@@ -219,6 +219,10 @@ namespace Video_Registers.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Delete Selected Frame Image
+        /// </summary>
+        /// <param name="obj"></param>
         private async void OnDeleteSelected(object obj)
         {
             if (SelectedImage != null)
@@ -263,7 +267,7 @@ namespace Video_Registers.ViewModel
         {
             var dialog = new CommonOpenFileDialog
             {
-                IsFolderPicker = true, // <-- Dòng này biến nó thành Folder Picker
+                IsFolderPicker = true, 
                 Title = "Chọn thư mục để lưu ảnh"
             };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
