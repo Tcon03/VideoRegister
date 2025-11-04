@@ -54,7 +54,6 @@ namespace Video_Registers.Services
         /// <returns></returns>
         public async Task<bool> DeleteFolderPath(string tempFolder)
         {
-
             if (Directory.Exists(tempFolder))
             {
                 {
@@ -64,7 +63,6 @@ namespace Video_Registers.Services
                 }
 
             }
-
             else
             {
                 Log.Warning("Thư mục tạm không tồn tại: {TempFolder}", tempFolder);
@@ -72,6 +70,7 @@ namespace Video_Registers.Services
 
             }
         }
+
 
         /// <summary>
         /// Load image from folder

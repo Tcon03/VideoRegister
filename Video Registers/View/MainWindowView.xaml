@@ -12,6 +12,12 @@
         x:Name="_this"
         Icon="/Image/FaceIcon.png"
         Title="Video Register" Height="720" Width="1280">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding ClosedCommand}"
+                                   PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -90,9 +96,9 @@
                     </MediaElement>
 
                     <StackPanel VerticalAlignment="Bottom" 
-                                Margin="20"
-                                HorizontalAlignment="Center" 
+                                Margin="10"
                                 Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
+                                HorizontalAlignment="Center" 
                                 Orientation="Horizontal">
 
                         <Button Command="{Binding PlayPauseCommand}"
@@ -156,14 +162,20 @@
                                 Width="100"
                                 Value="{Binding Volume, Mode=TwoWay}" />
 
-                        <TextBox Text="{Binding Volume, Mode=OneWay, StringFormat='F0'}"
-                                 VerticalAlignment="Center"
-                                 FontSize="20"
-                                 Margin="5 5 0 0"
-                                 Width="30"
-                                 IsReadOnly="True">
+                        <Border Background="White"
+                                CornerRadius="5" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="5 5 0 0"
+                                MinWidth="25"
+                                MinHeight="25">
+                            <TextBlock Text="{Binding Volume, Mode=OneWay, StringFormat='F0'}"
+                                       VerticalAlignment="Center"
+                                       FontSize="16"
+                                       FontWeight="Medium"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
 
-                        </TextBox>
                     </StackPanel>
 
                 </Grid>
@@ -239,62 +251,67 @@
                 <Border CornerRadius="20"
                         Margin="10"
                         Background="LightGray">
-                    <Grid Visibility="{Binding IsFrameProcessing , Converter={StaticResource BoolToVisConverterLoaded}}">
-                    <!--<Grid>-->
-                        <Image 
-                            Name="disPlayImage" 
-                            Stretch="Uniform" 
-                            Source="{Binding SelectedImage.ImageSource }"
-                            HorizontalAlignment="Center">
-                        </Image>
+                    <Grid>
+                        <ProgressBar IsIndeterminate="True" 
+                                     Margin="20"
+                                     Visibility="{Binding GenerateInProgress ,Converter={StaticResource BoolToVisConverterLoaded}}"
+                                    Style="{StaticResource CircleStyle}"/>
+                        <Grid Visibility="{Binding IsFrameProcessing,Converter={StaticResource BoolToVisConverterLoaded}}">
+                            <Image 
+                                Name="disPlayImage" 
+                                Stretch="Uniform" 
+                                Source="{Binding SelectedImage.ImageSource }"
+                                HorizontalAlignment="Center">
+                            </Image>
 
-                        <Button HorizontalAlignment="Right"
-                                Margin="15"
-                                Command="{Binding DeleteSelectedCommand}"
-                                Style="{StaticResource btnIcon}"
-                                VerticalAlignment="Top">
-                            <Icon:PackIconMaterial 
-                                   Foreground="#EF4444"
-                                   Height="15"
-                                   Width="20"
-                                   Kind="Close"/>
-                        </Button>
-                        <Button HorizontalAlignment="Left" 
-                                Margin="10"
-                                Command="{Binding PreviousImageCommand}"
-                                Style="{StaticResource btnNextPre}">
-                            <Icon:PackIconMaterial 
+                            <Button HorizontalAlignment="Right"
+                                    Margin="15"
+                                    Command="{Binding DeleteSelectedCommand}"
+                                    Style="{StaticResource btnIcon}"
+                                    VerticalAlignment="Top">
+                                <Icon:PackIconMaterial 
+                                       Foreground="#EF4444"
+                                       Height="15"
+                                       Width="20"
+                                       Kind="Close"/>
+                            </Button>
+                            <Button HorizontalAlignment="Left" 
+                                    Margin="10"
+                                    Command="{Binding PreviousImageCommand}"
+                                    Style="{StaticResource btnNextPre}">
+                                <Icon:PackIconMaterial 
                                     Style="{StaticResource icon}"
                                     MinHeight="35"
                                     MinWidth="30"
                                     Kind="ArrowLeft"/>
-                        </Button>
+                            </Button>
 
-                        <Button HorizontalAlignment="Right"
+                            <Button HorizontalAlignment="Right"
                                 Margin="10"
                                 Command="{Binding NextImageCommand}" 
                                 Style="{StaticResource btnNextPre}">
-                            <Icon:PackIconMaterial 
-                                    MinHeight="35"
-                                    MinWidth="30"
-                                    Style="{StaticResource icon}"
-                                    Kind="ArrowRight"/>
-                        </Button>
+                                <Icon:PackIconMaterial 
+                                        MinHeight="35"
+                                        MinWidth="30"
+                                        Style="{StaticResource icon}"
+                                        Kind="ArrowRight"/>
+                            </Button>
 
-                        <Border CornerRadius="8"
-                                Margin="10"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Bottom" 
-                                MinHeight="40 " 
-                                Width="60"
-                                Background="White">
-                            <TextBlock Foreground="Black" 
+                            <Border CornerRadius="8"
+                                    Margin="10"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom" 
+                                    MinHeight="40 " 
+                                    Width="60"
+                                    Background="White">
+                                <TextBlock Foreground="Black" 
                                            FontSize="20"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"
                                            FontWeight="DemiBold"
                                            Text="{Binding DisplayIndexString}" />
-                        </Border>
+                            </Border>
+                        </Grid>
                     </Grid>
                 </Border>
 
@@ -324,12 +341,12 @@
                                     VerticalAlignment="Center" >
                             <Icon:PackIconMaterial
                                    Kind="Close" 
-                                VerticalAlignment="Center"
-                                    Height="10" 
-                                    Width="15"/>
+                                   VerticalAlignment="Center"
+                                   Height="10" 
+                                   Width="15"/>
                             <TextBlock Text="Reject"
-                                     Margin=" 5 0 0 0"
-                                    VerticalAlignment="Center"/>
+                                       Margin=" 5 0 0 0"
+                                       VerticalAlignment="Center"/>
 
                         </StackPanel>
                     </Button>

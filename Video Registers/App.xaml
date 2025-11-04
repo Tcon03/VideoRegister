@@ -6,6 +6,73 @@
              StartupUri="View\MainWindowView.xaml">
     <Application.Resources>
 
+        <Style x:Key="CircleStyle" TargetType="ProgressBar">
+            <Setter Property="Foreground" Value="#3B82F6"/>
+            <Setter Property="IsIndeterminate" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <!-- Vòng quay -->
+                            <Grid x:Name="Spinner" Width="50" 
+                                  Height="50" 
+                                  RenderTransformOrigin="0.5,0.5">
+                                <Grid.RenderTransform>
+                                    <!--  storyboard bám vào -->
+                                    <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                                </Grid.RenderTransform>
+
+                                <!-- Cung tròn (một đoạn của vòng tròn) -->
+                                <Path Stroke="{TemplateBinding Foreground}"
+                                      StrokeThickness="6"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round">
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="45,25">
+                                                <!-- Cung khi quay -->
+                                                <ArcSegment Size="20,20"
+                                                    Point="25,5"
+                                                    IsLargeArc="True"
+                                                    SweepDirection="Clockwise"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
+                            </Grid>
+
+                            <TextBlock Text="Đang cắt ảnh ..."
+                               FontSize="14"
+                               Foreground="#4A5568"
+                               HorizontalAlignment="Center"
+                               Margin="0,12,0,0"/>
+                        </StackPanel>
+
+                        <!-- Kích hoạt animation khi indeterminate -->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsIndeterminate" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard x:Name="SpinStoryboard">
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <!-- Carget vào Grid và đi qua RenderTransform.Angle -->
+                                            <DoubleAnimation
+                                                    Storyboard.TargetName="Spinner"
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                    From="0" To="360" Duration="0:0:1"/>
+
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="SpinStoryboard"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
 
         <Style TargetType="Button" x:Key="PrimaryButton">
             <Setter Property="FontSize" Value="15"/>
