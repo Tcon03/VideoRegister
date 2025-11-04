@@ -1,4 +1,4 @@
-# Ứng Dụng Desktop (WPF) Cut Frame Video
+# Ứng Dụng Desktop (WPF) Video Frame Extractor
 
 ------
 ##  🚀 Các Tính Năng Chính 
