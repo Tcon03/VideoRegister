@@ -60,7 +60,6 @@ namespace Video_Registers.ViewModel
                 _IsLoaded = value;
                 Log.Information($"IsLoaded changed to: {_IsLoaded}");
                 RaisePropertyChanged(nameof(IsLoaded));
-                RasieCanExecuteChanged();
             }
         }
 
@@ -76,7 +75,7 @@ namespace Video_Registers.ViewModel
             }
         }
 
-        private double _volume;
+        private double _volume=1;
         public double Volume
         {
             get => _volume;
@@ -237,7 +236,7 @@ namespace Video_Registers.ViewModel
                 File.Delete(removedIndex.FilePathImage);
                 if (StageImage.Count > 0)
                 {
-                    SelectedImage = StageImage.ElementAtOrDefault(index);
+                    SelectedImage = StageImage.ElementAtOrDefault(index) ?? StageImage.Last();
                 }
                 else
                 {

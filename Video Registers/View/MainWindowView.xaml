@@ -37,7 +37,6 @@
                     Command="{Binding UploadCommand}"
                     Style="{StaticResource PrimaryButton }"
                     CommandParameter="{ Binding ElementName=_this}">
-
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
                             Kind="Upload"
@@ -91,6 +90,7 @@
                     </MediaElement>
 
                     <StackPanel VerticalAlignment="Bottom" 
+                                Margin="20"
                                 HorizontalAlignment="Center" 
                                 Visibility="{Binding IsLoaded ,Converter={StaticResource BoolToVisConverterLoaded}}"
                                 Orientation="Horizontal">
@@ -196,12 +196,10 @@
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial 
                              Kind="ImageArea" 
-                            IsEnabled="{Binding IsLoaded,Mode=OneWay}"
+                             IsEnabled="{Binding IsLoaded,Mode=OneWay}"
                               Foreground="White"
-                              Margin="0 0 10 0"
+                              Margin="0 4 10 0"
                              VerticalAlignment="Center"/>
-
-
                         <TextBlock
                               FontSize="16"
                              FontWeight="DemiBold"
@@ -257,9 +255,9 @@
                                 VerticalAlignment="Top">
                             <Icon:PackIconMaterial 
                                    Foreground="#EF4444"
-                                     Height="15"
-                                    Width="20"
-                                    Kind="Close"/>
+                                   Height="15"
+                                   Width="20"
+                                   Kind="Close"/>
                         </Button>
                         <Button HorizontalAlignment="Left" 
                                 Margin="10"
