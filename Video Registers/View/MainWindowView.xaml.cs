@@ -73,5 +73,7 @@ namespace Video_Registers.View
                 videoPlayer.Position = TimeSpan.Zero; // Rewind to the start
             }
         }
+
+     
     }
 }

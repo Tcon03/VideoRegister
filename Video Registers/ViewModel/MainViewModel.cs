@@ -6,9 +6,11 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,7 +77,7 @@ namespace Video_Registers.ViewModel
             }
         }
 
-        private double _volume=1;
+        private double _volume = 1;
         public double Volume
         {
             get => _volume;
@@ -180,6 +182,17 @@ namespace Video_Registers.ViewModel
                 RaisePropertyChanged(nameof(DisplayIndexString));
             }
         }
+        private bool _generateInProgress;
+        public bool GenerateInProgress
+        {
+            get => _generateInProgress;
+            set
+            {
+                _generateInProgress = value;
+                Log.Information("GenerateInProgress change" + _generateInProgress);
+                RaisePropertyChanged(nameof(GenerateInProgress));
+            }
+        }
 
         public ICommand UploadCommand { get; set; }
         public ICommand PlayPauseCommand { get; set; }
@@ -192,7 +205,7 @@ namespace Video_Registers.ViewModel
         public ICommand DeleteSelectedCommand { get; set; }
         public ICommand AcceptCommands { get; set; }
         public ICommand RejectImageCommand { get; set; }
-
+        public ICommand ClosedCommand { get; set; }
 
         public MainViewModel()
         {
@@ -208,7 +221,28 @@ namespace Video_Registers.ViewModel
             RejectImageCommand = new VfxCommand(OnReject, CanReject);
             AcceptCommands = new VfxCommand(OnSave, CanSave);
             DeleteSelectedCommand = new VfxCommand(OnDeleteSelected, CanDeleteSelected);
+            ClosedCommand = new VfxCommand(OnClosed, () => true);
             CheckForUpdates();
+        }
+
+        private void OnClosed(object obj)
+        {
+            var e = obj as CancelEventArgs;
+            if (e == null)
+                return;
+            e.Cancel = true;
+            var result = MessageBox.Show("Bạn có chắc chắn muốn thoát ứng dụng không?", "Xác nhận thoát", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+            {
+                Log.Information("User hủy thao tác đóng ứng dụng");
+                return;
+            }
+            if (!string.IsNullOrEmpty(_tempFolderPath))
+            {
+                _videoProcessing.DeleteFolderPath(_tempFolderPath).Wait();
+                Log.Information("Đã xóa thư mục tạm khi đóng ứng dụng :" + _tempFolderPath);
+            }
+            Application.Current.Shutdown();
         }
 
         private bool CanDeleteSelected()
@@ -226,14 +260,12 @@ namespace Video_Registers.ViewModel
         {
             if (SelectedImage != null)
             {
-
                 var removedIndex = SelectedImage;
                 int index = StageImage.IndexOf(removedIndex);
                 StageImage.Remove(removedIndex);
-
                 TotalImage = StageImage.Count;
 
-                File.Delete(removedIndex.FilePathImage);
+                await Task.Run(() => File.Delete(removedIndex.FilePathImage));
                 if (StageImage.Count > 0)
                 {
                     SelectedImage = StageImage.ElementAtOrDefault(index) ?? StageImage.Last();
@@ -244,7 +276,6 @@ namespace Video_Registers.ViewModel
                     IsFrameProcessing = false;
                     await _videoProcessing.DeleteFolderPath(_tempFolderPath);
                     _tempFolderPath = null;
-
                 }
                 (RejectImageCommand as VfxCommand)?.RaiseCanExecuteChanged();
                 (AcceptCommands as VfxCommand)?.RaiseCanExecuteChanged();
@@ -266,7 +297,7 @@ namespace Video_Registers.ViewModel
         {
             var dialog = new CommonOpenFileDialog
             {
-                IsFolderPicker = true, 
+                IsFolderPicker = true,
                 Title = "Chọn thư mục để lưu ảnh"
             };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
@@ -302,6 +333,13 @@ namespace Video_Registers.ViewModel
         /// </summary>
         private async void OnReject(object obj)
         {
+
+            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa tất cả các ảnh không?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+            {
+                Log.Information("User hủy thao tác xóa thư mục tạm");
+                return;
+            }
 
             IsFrameProcessing = false;
             StageImage.Clear();
@@ -361,27 +399,39 @@ namespace Video_Registers.ViewModel
             {
                 return;
             }
-            _tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Log.Information("TempPath lưu ảnh ở đường dẫn :" + _tempFolderPath);
-            bool processing = await _videoProcessing.GenerateImageAsync(VideoSource.LocalPath, _tempFolderPath, FrameInterval, _ffmpegRepository._ffmpegPath);
 
-            if (processing)
+            try
             {
+                GenerateInProgress = true;
+                _tempFolderPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                Log.Information("TempPath lưu ảnh ở đường dẫn :" + _tempFolderPath);
+                bool processing = await _videoProcessing.GenerateImageAsync(VideoSource.LocalPath, _tempFolderPath, FrameInterval, _ffmpegRepository._ffmpegPath);
 
-                // get image từ thư mục tạm
-                var loadImage = _videoProcessing.LoadImageFolder(_tempFolderPath);
-                MessageBox.Show("Generate Frame Image Success!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                StageImage = new ObservableCollection<FrameImage>(loadImage);
-                TotalImage = StageImage.Count;
-                SelectedImage = StageImage.FirstOrDefault();
-                IsFrameProcessing = true;
+                if (processing)
+                {
+                    // get image từ thư mục tạm
+                    var loadImage = _videoProcessing.LoadImageFolder(_tempFolderPath);
+                    StageImage = new ObservableCollection<FrameImage>(loadImage);
+                    TotalImage = StageImage.Count;
+                    SelectedImage = StageImage.FirstOrDefault();
+                    IsFrameProcessing = true;
 
+                }
+                else
+                {
+                    MessageBox.Show("Generate Frame Image Failed!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Generate Frame Image Failed!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error("Lỗi trong quá trình Generate Frame Image :" + ex);
+            }
+            finally
+            {
+                GenerateInProgress = false;
             }
         }
+
         /// <summary>
         /// Check download FFmpeg 
         /// </summary>
@@ -423,7 +473,12 @@ namespace Video_Registers.ViewModel
             IsLoaded = false;
             IsMuted = false;
             IsPlaying = false;
-            IsFrameProcessing = false;
+            if (StageImage != null)
+            {
+                OnReject(null);
+            }
+
+
         }
 
         /// <summary>
@@ -476,6 +531,10 @@ namespace Video_Registers.ViewModel
             AutoUpdater.Start(link);
         }
 
+        /// <summary>
+        /// Event Check For Update
+        /// </summary>
+        /// <param name="args"></param>
         private static void AutoUpdater_CheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             var _dischapter = Application.Current.Dispatcher;
